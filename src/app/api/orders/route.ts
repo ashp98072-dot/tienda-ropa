@@ -61,6 +61,16 @@ export async function POST(request: Request) {
     );
 
     const user = await getSessionUser();
+    if (!user) {
+      return NextResponse.json(
+        {
+          error:
+            "Debes iniciar sesión o registrarte para realizar un pedido.",
+          code: "AUTH_REQUIRED",
+        },
+        { status: 401 },
+      );
+    }
 
     const order: Order = {
       id: createOrderId(),
@@ -73,7 +83,7 @@ export async function POST(request: Request) {
       total: body.subtotal + quote.amount,
       status: initialStatus(body.paymentMethod),
       createdAt: new Date().toISOString(),
-      userId: user?.id,
+      userId: user.id,
     };
 
     await saveOrder(order);

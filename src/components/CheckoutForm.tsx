@@ -55,7 +55,6 @@ export function CheckoutForm() {
   const [notes, setNotes] = useState("");
   const [addresses, setAddresses] = useState<Address[]>([]);
   const [selectedAddressId, setSelectedAddressId] = useState("");
-  const [loggedIn, setLoggedIn] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -65,7 +64,6 @@ export function CheckoutForm() {
         const supabase = createClient();
         const { data: auth } = await supabase.auth.getUser();
         if (!auth.user) return;
-        setLoggedIn(true);
         setEmail(auth.user.email ?? "");
         const metaName = auth.user.user_metadata?.full_name as
           | string
@@ -156,9 +154,15 @@ export function CheckoutForm() {
 
       const data = (await res.json()) as {
         error?: string;
+        code?: string;
         redirectUrl?: string;
         orderId?: string;
       };
+
+      if (res.status === 401 || data.code === "AUTH_REQUIRED") {
+        router.push("/cuenta/login?next=/checkout");
+        return;
+      }
 
       if (!res.ok || !data.redirectUrl) {
         setError(data.error ?? "No se pudo procesar el pedido.");
@@ -248,22 +252,6 @@ export function CheckoutForm() {
           <h2 className="font-[family-name:var(--font-display)] text-2xl">
             {shippingMethod === "pickup" ? "Tus datos" : "Datos de envío"}
           </h2>
-
-          {!loggedIn && (
-            <p className="mt-3 text-sm text-[var(--muted)]">
-              ¿Ya tienes cuenta?{" "}
-              <Link href="/cuenta/login" className="text-[var(--accent)] underline">
-                Entra
-              </Link>{" "}
-              para usar tus direcciones guardadas.{" "}
-              <Link
-                href="/cuenta/registro"
-                className="text-[var(--accent)] underline"
-              >
-                Regístrate
-              </Link>
-            </p>
-          )}
 
           {addresses.length > 0 && (
             <label className="mt-4 block text-sm">

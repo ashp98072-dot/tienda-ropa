@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useState, type FormEvent } from "react";
+import { safeNextPath } from "@/lib/auth-redirect";
 import { createClient } from "@/lib/supabase-browser";
 
 function friendlyAuthError(message: string) {
@@ -17,6 +18,8 @@ function friendlyAuthError(message: string) {
 
 export function RegisterForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const next = safeNextPath(searchParams.get("next"));
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [phone, setPhone] = useState("");
@@ -26,8 +29,8 @@ export function RegisterForm() {
   const [info, setInfo] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  async function goToAccount() {
-    router.push("/cuenta");
+  function goNext() {
+    router.push(next);
     router.refresh();
   }
 
@@ -56,34 +59,41 @@ export function RegisterForm() {
       return;
     }
 
-    // Si Supabase ya dio sesión, entrar de una
     if (data.session) {
       setLoading(false);
-      await goToAccount();
+      goNext();
       return;
     }
 
-    // Intentar login inmediato (cuando no piden confirmar correo)
     const { data: login, error: loginErr } =
       await supabase.auth.signInWithPassword({ email, password });
     setLoading(false);
 
     if (login.session && !loginErr) {
-      await goToAccount();
+      goNext();
       return;
     }
 
-    // Cuenta creada pero aún no hay sesión (Confirm email activo en Supabase)
     setInfo(
-      "Cuenta creada. Si no entras solo, ve a Iniciar sesión. (El admin debe desactivar Confirm email en Supabase para entrada automática.)",
+      "Cuenta creada. Si no entras solo, inicia sesión. (Desactiva Confirm email en Supabase para entrada automática.)",
     );
   }
 
   const input =
     "mt-1 w-full border border-[var(--ink)]/15 bg-white px-3 py-2.5 text-sm outline-none focus:border-[var(--accent)]";
 
+  const loginHref =
+    next !== "/cuenta"
+      ? `/cuenta/login?next=${encodeURIComponent(next)}`
+      : "/cuenta/login";
+
   return (
     <form onSubmit={onSubmit} className="mx-auto max-w-md space-y-4">
+      {next === "/checkout" && (
+        <p className="border border-black/10 bg-[var(--mist)] px-3 py-2 text-sm">
+          Crea tu cuenta para poder finalizar la compra.
+        </p>
+      )}
       {error && (
         <p className="border border-[var(--accent)]/30 bg-[var(--accent)]/5 px-3 py-2 text-sm text-[var(--accent)]">
           {error}
@@ -92,7 +102,7 @@ export function RegisterForm() {
       {info && (
         <p className="border border-black/10 bg-[var(--mist)] px-3 py-2 text-sm">
           {info}{" "}
-          <Link href="/cuenta/login" className="underline">
+          <Link href={loginHref} className="underline">
             Iniciar sesión
           </Link>
         </p>
@@ -161,7 +171,7 @@ export function RegisterForm() {
       </button>
       <p className="text-center text-sm text-[var(--muted)]">
         ¿Ya tienes cuenta?{" "}
-        <Link href="/cuenta/login" className="text-[var(--accent)] underline">
+        <Link href={loginHref} className="text-[var(--accent)] underline">
           Entrar
         </Link>
       </p>

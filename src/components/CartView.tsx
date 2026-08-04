@@ -120,6 +120,7 @@ export function CartView() {
         </div>
         <p className="mt-2 text-xs text-[var(--muted)]">
           Envío según departamento o retiro en tienda. Gratis desde Q500.00.
+          Necesitas cuenta para pedir.
         </p>
         <Link
           href="/checkout"

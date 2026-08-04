@@ -1,12 +1,15 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useState, type FormEvent } from "react";
+import { safeNextPath } from "@/lib/auth-redirect";
 import { createClient } from "@/lib/supabase-browser";
 
 export function LoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const next = safeNextPath(searchParams.get("next"));
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -30,15 +33,25 @@ export function LoginForm() {
       );
       return;
     }
-    router.push("/cuenta");
+    router.push(next);
     router.refresh();
   }
 
   const input =
     "mt-1 w-full border border-[var(--ink)]/15 bg-white px-3 py-2.5 text-sm outline-none focus:border-[var(--accent)]";
 
+  const registerHref =
+    next !== "/cuenta"
+      ? `/cuenta/registro?next=${encodeURIComponent(next)}`
+      : "/cuenta/registro";
+
   return (
     <form onSubmit={onSubmit} className="mx-auto max-w-md space-y-4">
+      {next === "/checkout" && (
+        <p className="border border-black/10 bg-[var(--mist)] px-3 py-2 text-sm">
+          Para finalizar tu compra, entra con tu cuenta o regístrate.
+        </p>
+      )}
       {error && (
         <p className="border border-[var(--accent)]/30 bg-[var(--accent)]/5 px-3 py-2 text-sm text-[var(--accent)]">
           {error}
@@ -76,7 +89,7 @@ export function LoginForm() {
       </button>
       <p className="text-center text-sm text-[var(--muted)]">
         ¿No tienes cuenta?{" "}
-        <Link href="/cuenta/registro" className="text-[var(--accent)] underline">
+        <Link href={registerHref} className="text-[var(--accent)] underline">
           Regístrate
         </Link>
       </p>
