@@ -12,9 +12,11 @@ Un cliente → un catálogo → un panel admin → **un solo proyecto Supabase**
    1. `supabase/schema.sql` (productos, pedidos, fotos)
    2. `supabase/schema-auth.sql` (cuentas de clientes + direcciones)
 3. Auth → Providers → Email: para pruebas, desactiva **Confirm email** (así el registro entra al momento).
-4. Settings → API → copia:
+4. Settings → API Keys → copia:
    - Project URL → `NEXT_PUBLIC_SUPABASE_URL`
-   - `service_role` (secret) → `SUPABASE_SERVICE_ROLE_KEY`
+   - **Legacy** `anon` `public` (JWT que empieza con `eyJ…`) → `NEXT_PUBLIC_SUPABASE_ANON_KEY`  
+     (obligatoria para registro/login; `sb_publishable_…` sola suele dar “Invalid API key”)
+   - **Legacy** `service_role` (secret) → `SUPABASE_SERVICE_ROLE_KEY`
 
 > Si ya creaste 3 proyectos por el otro sistema, usa **uno** nuevo limpio para esta tienda y archiva/borra los demás cuando quieras.
 
@@ -31,7 +33,8 @@ ADMIN_PASSWORD=tu-clave-segura
 ADMIN_SESSION_SECRET=otro-secreto-largo
 
 NEXT_PUBLIC_SUPABASE_URL=https://xxxx.supabase.co
-SUPABASE_SERVICE_ROLE_KEY=eyJ...
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJ...   # Legacy anon (NO solo sb_publishable_)
+SUPABASE_SERVICE_ROLE_KEY=eyJ...      # Legacy service_role
 
 # QPayPro cuando lo tengas
 QPAYPRO_ENVIRONMENT=sandbox
@@ -74,8 +77,9 @@ git push -u origin main
 
 1. [vercel.com](https://vercel.com) → Import del repo.
 2. Framework: Next.js (automático).
-3. Environment Variables: las mismas del `.env.local` (con `NEXT_PUBLIC_SITE_URL=https://tu-dominio.vercel.app`).
-4. Deploy.
+3. Environment Variables: las mismas del `.env.local` (con `NEXT_PUBLIC_SITE_URL=https://tu-dominio.vercel.app`).  
+   Debe existir `NEXT_PUBLIC_SUPABASE_ANON_KEY` con el JWT **Legacy anon** (`eyJ…`). Si solo tienes `sb_publishable_…`, el registro falla con “Invalid API key”.
+4. Deploy → Redeploy después de cambiar variables.
 
 Luego en Supabase / QPayPro usa esa URL pública para callbacks.
 

@@ -23,8 +23,11 @@ export default async function CuentaPage() {
   const user = await getSessionUser();
   if (!user) redirect("/cuenta/login");
 
+  const meta = user.user_metadata ?? {};
   const name =
-    (user.user_metadata?.full_name as string | undefined) || user.email;
+    (meta.full_name as string | undefined) ||
+    [meta.first_name, meta.last_name].filter(Boolean).join(" ") ||
+    user.email;
 
   return (
     <div className="mx-auto max-w-3xl px-4 pt-28 pb-16">

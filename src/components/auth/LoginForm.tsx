@@ -23,7 +23,11 @@ export function LoginForm() {
     });
     setLoading(false);
     if (err) {
-      setError(err.message);
+      setError(
+        /invalid api key/i.test(err.message)
+          ? "Error de configuración: falta la key anónima JWT de Supabase (anon / eyJ…) en Vercel."
+          : err.message,
+      );
       return;
     }
     router.push("/cuenta");

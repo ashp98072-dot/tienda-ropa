@@ -69,7 +69,15 @@ begin
   insert into public.profiles (id, full_name, phone)
   values (
     new.id,
-    coalesce(new.raw_user_meta_data->>'full_name', ''),
+    coalesce(
+      nullif(trim(new.raw_user_meta_data->>'full_name'), ''),
+      trim(concat_ws(
+        ' ',
+        new.raw_user_meta_data->>'first_name',
+        new.raw_user_meta_data->>'last_name'
+      )),
+      ''
+    ),
     coalesce(new.raw_user_meta_data->>'phone', '')
   );
   return new;

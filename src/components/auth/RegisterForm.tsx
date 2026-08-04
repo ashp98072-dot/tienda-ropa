@@ -5,9 +5,17 @@ import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
 import { createClient } from "@/lib/supabase-browser";
 
+function friendlyAuthError(message: string) {
+  if (/invalid api key/i.test(message)) {
+    return "Error de configuración: falta la key anónima JWT de Supabase (anon / eyJ…) en Vercel. No uses solo sb_publishable_.";
+  }
+  return message;
+}
+
 export function RegisterForm() {
   const router = useRouter();
-  const [fullName, setFullName] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -20,17 +28,23 @@ export function RegisterForm() {
     setLoading(true);
     setError(null);
     setInfo(null);
+    const fullName = `${firstName.trim()} ${lastName.trim()}`.trim();
     const supabase = createClient();
     const { data, error: err } = await supabase.auth.signUp({
       email,
       password,
       options: {
-        data: { full_name: fullName, phone },
+        data: {
+          first_name: firstName.trim(),
+          last_name: lastName.trim(),
+          full_name: fullName,
+          phone,
+        },
       },
     });
     setLoading(false);
     if (err) {
-      setError(err.message);
+      setError(friendlyAuthError(err.message));
       return;
     }
     if (data.session) {
@@ -61,16 +75,28 @@ export function RegisterForm() {
           </Link>
         </p>
       )}
-      <label className="block text-sm">
-        Nombre completo
-        <input
-          required
-          className={input}
-          value={fullName}
-          onChange={(e) => setFullName(e.target.value)}
-          autoComplete="name"
-        />
-      </label>
+      <div className="grid gap-4 sm:grid-cols-2">
+        <label className="block text-sm">
+          Nombre
+          <input
+            required
+            className={input}
+            value={firstName}
+            onChange={(e) => setFirstName(e.target.value)}
+            autoComplete="given-name"
+          />
+        </label>
+        <label className="block text-sm">
+          Apellido
+          <input
+            required
+            className={input}
+            value={lastName}
+            onChange={(e) => setLastName(e.target.value)}
+            autoComplete="family-name"
+          />
+        </label>
+      </div>
       <label className="block text-sm">
         Teléfono / WhatsApp
         <input
