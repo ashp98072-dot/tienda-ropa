@@ -1,5 +1,6 @@
 export type Segment = "ninos" | "adolescentes" | "adultos";
 export type Gender = "mujer" | "hombre" | "unisex" | "nina" | "nino";
+/** Categorías fijas del demo + las que cree el admin */
 export type Category =
   | "blusas"
   | "jeans"
@@ -7,7 +8,8 @@ export type Category =
   | "vestidos"
   | "shorts"
   | "accesorios"
-  | "tops";
+  | "tops"
+  | (string & {});
 
 export type PaymentMethod = "tarjeta" | "contra_entrega" | "transferencia";
 

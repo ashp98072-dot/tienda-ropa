@@ -1,17 +1,17 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import {
-  CATEGORY_LABELS,
-  GENDER_LABELS,
-  SEGMENT_LABELS,
-} from "@/lib/products";
-import type { Category, Gender, Segment } from "@/lib/types";
+import { GENDER_LABELS, SEGMENT_LABELS } from "@/lib/products";
+import type { Gender, Segment } from "@/lib/types";
 import { SearchBar } from "./SearchBar";
 
 const sizes = ["XS", "S", "M", "L", "XL", "XXL", "4", "6", "8", "10", "12"];
 
-export function ProductFilters() {
+export function ProductFilters({
+  categories,
+}: {
+  categories: { slug: string; name: string }[];
+}) {
   const router = useRouter();
   const params = useSearchParams();
 
@@ -88,9 +88,9 @@ export function ProductFilters() {
           onChange={(e) => setParam("categoria", e.target.value)}
         >
           <option value="">Todas</option>
-          {(Object.keys(CATEGORY_LABELS) as Category[]).map((key) => (
-            <option key={key} value={key}>
-              {CATEGORY_LABELS[key]}
+          {categories.map((c) => (
+            <option key={c.slug} value={c.slug}>
+              {c.name}
             </option>
           ))}
         </select>

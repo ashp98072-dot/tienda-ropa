@@ -11,7 +11,6 @@ export function MultiImageUpload({
 }) {
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [urlDraft, setUrlDraft] = useState("");
 
   const images = value.filter(Boolean);
 
@@ -31,13 +30,6 @@ export function MultiImageUpload({
     onChange([...images, data.url]);
   }
 
-  function addUrl() {
-    const url = urlDraft.trim();
-    if (!url) return;
-    onChange([...images, url]);
-    setUrlDraft("");
-  }
-
   function removeAt(index: number) {
     onChange(images.filter((_, i) => i !== index));
   }
@@ -51,11 +43,6 @@ export function MultiImageUpload({
 
   return (
     <div className="space-y-3">
-      <p className="text-xs text-[var(--muted)]">
-        Solo el panel admin puede subir fotos. En la tienda el cliente solo ve
-        las imágenes del producto (sin este formulario ni links de subida).
-      </p>
-
       {images.length > 0 && (
         <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3">
           {images.map((url, i) => (
@@ -96,9 +83,9 @@ export function MultiImageUpload({
       )}
 
       <label className="block text-sm">
-        Subir otra foto (celular o PC)
+        Subir foto
         <span className="mt-1 block text-xs font-normal text-[var(--muted)]">
-          JPG/PNG hasta 5 MB. Se guarda en Supabase Storage.
+          Desde tu celular o PC · JPG/PNG hasta 5 MB
         </span>
         <input
           type="file"
@@ -111,25 +98,6 @@ export function MultiImageUpload({
           }}
         />
       </label>
-
-      <div className="flex flex-col gap-2 sm:flex-row sm:items-end">
-        <label className="block flex-1 text-sm">
-          O pegar URL de imagen (opcional)
-          <input
-            className="mt-1 w-full border border-black/15 bg-white px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
-            value={urlDraft}
-            onChange={(e) => setUrlDraft(e.target.value)}
-            placeholder="https://..."
-          />
-        </label>
-        <button
-          type="button"
-          onClick={addUrl}
-          className="border border-black/15 px-4 py-2 text-xs tracking-[0.14em] uppercase"
-        >
-          Agregar URL
-        </button>
-      </div>
 
       {uploading && (
         <p className="text-xs text-[var(--muted)]">Subiendo…</p>

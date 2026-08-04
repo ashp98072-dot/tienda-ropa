@@ -1,13 +1,9 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState, type FormEvent } from "react";
-import {
-  CATEGORY_LABELS,
-  GENDER_LABELS,
-  SEGMENT_LABELS,
-} from "@/lib/products";
-import type { Category, Gender, Product, Segment } from "@/lib/types";
+import { useEffect, useState, type FormEvent } from "react";
+import { GENDER_LABELS, SEGMENT_LABELS } from "@/lib/products";
+import type { Gender, Product, Segment } from "@/lib/types";
 import { MultiImageUpload } from "./MultiImageUpload";
 
 function parseList(value: string) {
@@ -23,12 +19,13 @@ function productImages(product?: Product) {
   return product.image ? [product.image] : [];
 }
 
+type Cat = { slug: string; name: string };
+
 const empty = {
-  slug: "",
   name: "",
   price: 0,
   description: "",
-  category: "tops" as Category,
+  category: "tops",
   segment: "adultos" as Segment,
   gender: "mujer" as Gender,
   isNew: true,
@@ -42,7 +39,6 @@ export function ProductForm({ product }: { product?: Product }) {
     ...empty,
     ...(product
       ? {
-          slug: product.slug,
           name: product.name,
           price: product.price,
           description: product.description,
@@ -62,8 +58,46 @@ export function ProductForm({ product }: { product?: Product }) {
     product?.colors?.join(", ") ?? "Negro",
   );
   const [images, setImages] = useState<string[]>(productImages(product));
+  const [categories, setCategories] = useState<Cat[]>([]);
+  const [newCategory, setNewCategory] = useState("");
   const [saving, setSaving] = useState(false);
+  const [addingCat, setAddingCat] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    void fetch("/api/admin/categories")
+      .then((r) => r.json())
+      .then((d: { categories?: Cat[] }) => {
+        setCategories(d.categories ?? []);
+      })
+      .catch(() => undefined);
+  }, []);
+
+  async function addCategory() {
+    const name = newCategory.trim();
+    if (!name) return;
+    setAddingCat(true);
+    setError(null);
+    const res = await fetch("/api/admin/categories", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name }),
+    });
+    const data = (await res.json()) as { category?: Cat; error?: string };
+    setAddingCat(false);
+    if (!res.ok || !data.category) {
+      setError(data.error ?? "No se pudo crear la categoría");
+      return;
+    }
+    setCategories((prev) => {
+      const next = prev.filter((c) => c.slug !== data.category!.slug);
+      return [...next, data.category!].sort((a, b) =>
+        a.name.localeCompare(b.name, "es"),
+      );
+    });
+    setForm((f) => ({ ...f, category: data.category!.slug }));
+    setNewCategory("");
+  }
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
@@ -76,6 +110,8 @@ export function ProductForm({ product }: { product?: Product }) {
 
     const payload = {
       ...form,
+      // slug lo genera el servidor con el nombre
+      slug: product?.slug ?? "",
       price: Number(form.price),
       sizes: sizes.length ? sizes : ["S", "M", "L"],
       colors: colors.length ? colors : ["Negro"],
@@ -125,35 +161,18 @@ export function ProductForm({ product }: { product?: Product }) {
         />
       </label>
 
-      <div className="grid gap-4 sm:grid-cols-2">
-        <label className="block text-sm">
-          Precio (Q)
-          <input
-            type="number"
-            min={0}
-            step="0.01"
-            className={input}
-            required
-            value={form.price}
-            onChange={(e) =>
-              setForm({ ...form, price: Number(e.target.value) })
-            }
-          />
-        </label>
-        <label className="block text-sm">
-          Link del producto (slug)
-          <input
-            className={input}
-            placeholder="se crea solo si lo dejas vacío"
-            value={form.slug}
-            onChange={(e) => setForm({ ...form, slug: e.target.value })}
-          />
-          <span className="mt-1 block text-xs text-[var(--muted)]">
-            Es la parte de la URL, ej. /producto/blusa-basica. El cliente no ve
-            este campo; solo admin.
-          </span>
-        </label>
-      </div>
+      <label className="block text-sm">
+        Precio (Q)
+        <input
+          type="number"
+          min={0}
+          step="0.01"
+          className={input}
+          required
+          value={form.price}
+          onChange={(e) => setForm({ ...form, price: Number(e.target.value) })}
+        />
+      </label>
 
       <label className="block text-sm">
         Descripción
@@ -167,7 +186,7 @@ export function ProductForm({ product }: { product?: Product }) {
 
       <div className="rounded border border-black/10 bg-[var(--mist)]/40 p-4">
         <p className="mb-1 text-xs tracking-[0.14em] text-[var(--muted)] uppercase">
-          Fotos del producto (solo admin)
+          Fotos del producto
         </p>
         <p className="mb-3 text-xs text-[var(--muted)]">
           Puedes subir varias. La primera es la principal en el catálogo.
@@ -213,17 +232,35 @@ export function ProductForm({ product }: { product?: Product }) {
           <select
             className={input}
             value={form.category}
-            onChange={(e) =>
-              setForm({ ...form, category: e.target.value as Category })
-            }
+            onChange={(e) => setForm({ ...form, category: e.target.value })}
           >
-            {(Object.keys(CATEGORY_LABELS) as Category[]).map((k) => (
-              <option key={k} value={k}>
-                {CATEGORY_LABELS[k]}
+            {categories.map((c) => (
+              <option key={c.slug} value={c.slug}>
+                {c.name}
               </option>
             ))}
           </select>
         </label>
+      </div>
+
+      <div className="flex flex-col gap-2 border border-black/10 bg-white p-3 sm:flex-row sm:items-end">
+        <label className="block flex-1 text-sm">
+          Nueva categoría
+          <input
+            className={input}
+            value={newCategory}
+            onChange={(e) => setNewCategory(e.target.value)}
+            placeholder="Ej. Chaquetas, Faldas…"
+          />
+        </label>
+        <button
+          type="button"
+          disabled={addingCat || !newCategory.trim()}
+          onClick={() => void addCategory()}
+          className="border border-black/15 px-4 py-2 text-xs tracking-[0.14em] uppercase disabled:opacity-50"
+        >
+          {addingCat ? "Creando…" : "Crear categoría"}
+        </button>
       </div>
 
       <label className="block text-sm">

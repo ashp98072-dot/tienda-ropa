@@ -3,12 +3,9 @@ import type { Metadata } from "next";
 import { ProductCard } from "@/components/ProductCard";
 import { ProductFilters } from "@/components/ProductFilters";
 import { SearchBar } from "@/components/SearchBar";
+import { categoryLabel, listCategories } from "@/lib/categories";
 import { listProducts } from "@/lib/catalog";
-import {
-  CATEGORY_LABELS,
-  GENDER_LABELS,
-  SEGMENT_LABELS,
-} from "@/lib/products";
+import { GENDER_LABELS, SEGMENT_LABELS } from "@/lib/products";
 import type { Category, Gender, Segment } from "@/lib/types";
 
 export const metadata: Metadata = {
@@ -34,7 +31,10 @@ export default async function TiendaPage({
   const talla = pick(sp.talla);
   const q = pick(sp.q).trim().toLowerCase();
 
-  const products = await listProducts();
+  const [products, categories] = await Promise.all([
+    listProducts(),
+    listCategories(),
+  ]);
   const filtered = products.filter((p) => {
     if (segmento && p.segment !== segmento) return false;
     if (genero && p.gender !== genero) return false;
@@ -44,7 +44,7 @@ export default async function TiendaPage({
       const haystack = [
         p.name,
         p.description,
-        CATEGORY_LABELS[p.category],
+        categoryLabel(p.category, categories),
         SEGMENT_LABELS[p.segment],
         GENDER_LABELS[p.gender],
         ...p.colors,
@@ -60,7 +60,7 @@ export default async function TiendaPage({
     q ? `“${pick(sp.q).trim()}”` : null,
     segmento ? SEGMENT_LABELS[segmento] : null,
     genero ? GENDER_LABELS[genero] : null,
-    categoria ? CATEGORY_LABELS[categoria] : null,
+    categoria ? categoryLabel(categoria, categories) : null,
   ].filter(Boolean);
 
   return (
@@ -84,7 +84,7 @@ export default async function TiendaPage({
 
       <div className="grid gap-10 lg:grid-cols-[220px_1fr]">
         <Suspense fallback={<div className="h-40 animate-pulse bg-[var(--mist)]" />}>
-          <ProductFilters />
+          <ProductFilters categories={categories} />
         </Suspense>
 
         {filtered.length === 0 ? (

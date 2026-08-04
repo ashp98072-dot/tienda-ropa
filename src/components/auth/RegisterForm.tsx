@@ -73,9 +73,9 @@ export function RegisterForm() {
       return;
     }
 
-    // Cuenta creada pero aún no puede entrar (confirma correo activado en Supabase)
+    // Cuenta creada pero aún no hay sesión (Confirm email activo en Supabase)
     setInfo(
-      "Tu cuenta quedó registrada. Para entrar de inmediato, el administrador debe desactivar «Confirm email» en Supabase. Mientras tanto, revisa tu correo o prueba Iniciar sesión.",
+      "Cuenta creada. Si no entras solo, ve a Iniciar sesión. (El admin debe desactivar Confirm email en Supabase para entrada automática.)",
     );
   }
 

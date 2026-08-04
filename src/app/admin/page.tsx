@@ -80,12 +80,6 @@ export default async function AdminHomePage() {
         >
           Ver pedidos
         </Link>
-        <Link
-          href="/admin/qa"
-          className="border border-black/15 px-5 py-3 text-xs tracking-[0.18em] uppercase"
-        >
-          Checklist QA
-        </Link>
       </div>
 
       <div className="mt-10 border border-black/10 bg-white p-5">

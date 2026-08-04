@@ -1,4 +1,4 @@
-import type { Category, Gender, Segment } from "./types";
+import type { Gender, Segment } from "./types";
 
 export const SEGMENT_LABELS: Record<Segment, string> = {
   ninos: "Niños",
@@ -14,7 +14,7 @@ export const GENDER_LABELS: Record<Gender, string> = {
   nino: "Niño",
 };
 
-export const CATEGORY_LABELS: Record<Category, string> = {
+export const CATEGORY_LABELS = {
   blusas: "Blusas",
   jeans: "Jeans",
   sets: "Sets",
@@ -22,7 +22,17 @@ export const CATEGORY_LABELS: Record<Category, string> = {
   shorts: "Shorts",
   accesorios: "Accesorios",
   tops: "Tops",
-};
+} as const satisfies Record<string, string>;
+
+export function slugifyCategory(text: string) {
+  return text
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "")
+    .slice(0, 40);
+}
 
 export const DEPARTMENTS_GT = [
   "Guatemala",

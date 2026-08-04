@@ -5,8 +5,8 @@ import { AddToCart } from "@/components/AddToCart";
 import { ProductGallery } from "@/components/ProductGallery";
 import { WishlistButton } from "@/components/WishlistButton";
 import { getProductBySlug, listProducts } from "@/lib/catalog";
+import { categoryLabel } from "@/lib/categories";
 import {
-  CATEGORY_LABELS,
   GENDER_LABELS,
   SEGMENT_LABELS,
   formatPrice,
@@ -68,7 +68,7 @@ export default async function ProductPage({ params }: { params: Params }) {
         <div className="lg:py-6">
           <p className="text-[10px] tracking-[0.2em] text-[var(--muted)] uppercase">
             {SEGMENT_LABELS[product.segment]} · {GENDER_LABELS[product.gender]} ·{" "}
-            {CATEGORY_LABELS[product.category]}
+            {categoryLabel(product.category)}
           </p>
           <h1 className="mt-2 font-[family-name:var(--font-display)] text-4xl sm:text-5xl">
             {product.name}
