@@ -112,7 +112,11 @@ export async function listProducts(options?: {
     query = query.eq("active", true);
   }
   const { data, error } = await query;
-  if (error) throw new Error(`Supabase products: ${error.message}`);
+  if (error) {
+    // Build/deploy no debe caer si aún no corriste el SQL
+    console.error(`Supabase products: ${error.message}`);
+    return [];
+  }
   return (data as DbProduct[]).map(fromDb);
 }
 

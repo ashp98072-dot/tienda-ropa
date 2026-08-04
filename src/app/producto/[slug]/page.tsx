@@ -15,8 +15,12 @@ import {
 type Params = Promise<{ slug: string }>;
 
 export async function generateStaticParams() {
-  const products = await listProducts();
-  return products.map((p) => ({ slug: p.slug }));
+  try {
+    const products = await listProducts();
+    return products.map((p) => ({ slug: p.slug }));
+  } catch {
+    return [];
+  }
 }
 
 export async function generateMetadata({

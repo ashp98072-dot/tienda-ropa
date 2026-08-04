@@ -23,7 +23,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: path === "" ? 1 : 0.7,
   }));
 
-  const products = await listProducts();
+  let products: Awaited<ReturnType<typeof listProducts>> = [];
+  try {
+    products = await listProducts();
+  } catch {
+    products = [];
+  }
   const productRoutes = products.map((p) => ({
     url: `${base}/producto/${p.slug}`,
     lastModified: new Date(),
