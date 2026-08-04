@@ -1,36 +1,57 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# I NEED YOU (INEEDYOUGT)
 
-## Getting Started
+Tienda online de ropa para niños, adolescentes y adultos — Guatemala.
 
-First, run the development server:
+## Stack
+
+- **Next.js 16** + React 19 + Tailwind CSS 4
+- Catálogo con filtros, wishlist, búsqueda
+- Carrito + checkout con **QPayPro** (tarjeta), contra entrega y transferencia
+
+## Cómo correr
 
 ```bash
+cp .env.example .env.local
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Abre [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### QPayPro (tarjeta)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. Copia `.env.example` → `.env.local`
+2. Sandbox por defecto: `visanetgt_qpay` / `88888888888`
+3. `QPAYPRO_DEMO_MODE=false` redirige a hosted checkout de QPayPro
+4. `QPAYPRO_DEMO_MODE=true` usa `/pago/demo` (simulación local)
+5. En producción: URL pública en `NEXT_PUBLIC_SITE_URL` (el relay necesita HTTPS accesible)
 
-## Learn More
+Flujo tarjeta: Checkout → `POST /api/orders` → token QPayPro → redirect `/checkout/store/{token}` → relay → confirmación.
 
-To learn more about Next.js, take a look at the following resources:
+## Rutas
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+| Ruta | Descripción |
+|------|-------------|
+| `/` | Home |
+| `/tienda` | Catálogo + filtros + búsqueda |
+| `/producto/[slug]` | Ficha |
+| `/deseos` | Wishlist |
+| `/carrito` | Bolsa |
+| `/checkout` | Pago |
+| `/pago/demo` | Simulación QPayPro |
+| `/pedido-confirmado` | Confirmación |
+| `/api/orders` | Crear pedido |
+| `/api/payments/qpaypro/relay` | Callback QPayPro |
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Envíos y correos (Fase 4)
 
-## Deploy on Vercel
+- Tarifas por zona GT + retiro en tienda + envío gratis desde Q500
+- Páginas `/envios`, `/devoluciones`, `/privacidad`, `/contacto`
+- Emails de pedido (consola en dev; Resend o SMTP en prod — ver `.env.example`)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Admin (Fase 5)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- URL: [/admin](http://localhost:3000/admin) — password default `ineedyou-admin`
+- Crear/editar productos, subir fotos, gestionar pedidos
+- Manual Shannon: `MANUAL-CLIENTE.md`
+- **Deploy GitHub + Vercel + 1 Supabase:** `DEPLOY.md`
