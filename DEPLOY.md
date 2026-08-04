@@ -8,7 +8,10 @@ Un cliente → un catálogo → un panel admin → **un solo proyecto Supabase**
 ## 1. Un proyecto en Supabase (solo uno)
 
 1. Entra a [supabase.com](https://supabase.com) → **New project** (ej. `ineedyougt`).
-2. SQL Editor → New query → pega todo el archivo `supabase/schema.sql` → **Run**.
+2. SQL Editor → New query → pega y corre **en este orden**:
+   1. `supabase/schema.sql` (productos, pedidos, fotos)
+   2. `supabase/schema-auth.sql` (cuentas de clientes + direcciones)
+3. Auth → Providers → Email: para pruebas, desactiva **Confirm email** (así el registro entra al momento).
 3. Settings → API → copia:
    - Project URL → `NEXT_PUBLIC_SUPABASE_URL`
    - `service_role` (secret) → `SUPABASE_SERVICE_ROLE_KEY`

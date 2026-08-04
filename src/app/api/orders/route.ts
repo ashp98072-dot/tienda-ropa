@@ -9,6 +9,7 @@ import {
 } from "@/lib/orders";
 import { registerQPayProCheckout } from "@/lib/qpaypro";
 import { getShippingQuote, type ShippingMethod } from "@/lib/shipping";
+import { getSessionUser } from "@/lib/supabase-server";
 import type { CartItem, PaymentMethod } from "@/lib/types";
 
 interface CreateOrderBody {
@@ -59,6 +60,8 @@ export async function POST(request: Request) {
       shippingMethod,
     );
 
+    const user = await getSessionUser();
+
     const order: Order = {
       id: createOrderId(),
       customer: body.customer,
@@ -70,6 +73,7 @@ export async function POST(request: Request) {
       total: body.subtotal + quote.amount,
       status: initialStatus(body.paymentMethod),
       createdAt: new Date().toISOString(),
+      userId: user?.id,
     };
 
     await saveOrder(order);

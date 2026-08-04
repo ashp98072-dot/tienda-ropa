@@ -36,6 +36,7 @@ export interface Order {
   total: number;
   status: OrderStatus;
   createdAt: string;
+  userId?: string;
   qpayproToken?: string;
   qpayproTransId?: string;
   paymentResponseText?: string;
@@ -51,6 +52,7 @@ type DbOrder = {
   shipping: number | string;
   total: number | string;
   status: OrderStatus;
+  user_id: string | null;
   qpaypro_token: string | null;
   qpaypro_trans_id: string | null;
   payment_response_text: string | null;
@@ -69,6 +71,7 @@ function fromDb(row: DbOrder): Order {
     total: Number(row.total),
     status: row.status,
     createdAt: row.created_at,
+    userId: row.user_id ?? undefined,
     qpayproToken: row.qpaypro_token ?? undefined,
     qpayproTransId: row.qpaypro_trans_id ?? undefined,
     paymentResponseText: row.payment_response_text ?? undefined,
@@ -86,6 +89,7 @@ function toDb(order: Order) {
     shipping: order.shipping,
     total: order.total,
     status: order.status,
+    user_id: order.userId ?? null,
     qpaypro_token: order.qpayproToken ?? null,
     qpaypro_trans_id: order.qpayproTransId ?? null,
     payment_response_text: order.paymentResponseText ?? null,

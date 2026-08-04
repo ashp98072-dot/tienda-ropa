@@ -105,6 +105,12 @@ export function Header() {
             Buscar
           </button>
           <Link
+            href="/cuenta"
+            className="hidden text-xs font-medium tracking-[0.14em] uppercase sm:inline"
+          >
+            Cuenta
+          </Link>
+          <Link
             href="/deseos"
             className="relative text-xs font-medium tracking-[0.14em] uppercase"
           >
@@ -164,6 +170,12 @@ export function Header() {
                 {item.label}
               </Link>
             ))}
+            <Link
+              href="/cuenta"
+              className="font-[family-name:var(--font-display)] text-2xl text-[var(--ink)]"
+            >
+              Mi cuenta
+            </Link>
             <Link
               href="/deseos"
               className="font-[family-name:var(--font-display)] text-2xl text-[var(--ink)]"

@@ -1,14 +1,17 @@
 "use client";
 
-import { useMemo, useState, type FormEvent } from "react";
+import Link from "next/link";
+import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCart } from "./CartProvider";
+import type { Address } from "@/lib/addresses";
 import { DEPARTMENTS_GT, formatPrice } from "@/lib/products";
 import {
   FREE_SHIPPING_MIN,
   getShippingQuote,
   type ShippingMethod,
 } from "@/lib/shipping";
+import { createClient } from "@/lib/supabase-browser";
 import type { PaymentMethod } from "@/lib/types";
 
 const paymentOptions: {
@@ -44,8 +47,58 @@ export function CheckoutForm() {
   const [shippingMethod, setShippingMethod] =
     useState<ShippingMethod>("delivery");
   const [department, setDepartment] = useState("");
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [municipality, setMunicipality] = useState("");
+  const [address, setAddress] = useState("");
+  const [notes, setNotes] = useState("");
+  const [addresses, setAddresses] = useState<Address[]>([]);
+  const [selectedAddressId, setSelectedAddressId] = useState("");
+  const [loggedIn, setLoggedIn] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function loadUserAddresses() {
+      try {
+        const supabase = createClient();
+        const { data: auth } = await supabase.auth.getUser();
+        if (!auth.user) return;
+        setLoggedIn(true);
+        setEmail(auth.user.email ?? "");
+        const metaName = auth.user.user_metadata?.full_name as
+          | string
+          | undefined;
+        if (metaName) setFullName(metaName);
+        const metaPhone = auth.user.user_metadata?.phone as string | undefined;
+        if (metaPhone) setPhone(metaPhone);
+
+        const { data } = await supabase
+          .from("addresses")
+          .select("*")
+          .eq("user_id", auth.user.id)
+          .order("is_default", { ascending: false });
+        const list = (data as Address[]) ?? [];
+        setAddresses(list);
+        const preferred = list.find((a) => a.is_default) ?? list[0];
+        if (preferred) applyAddress(preferred);
+      } catch {
+        /* sin supabase público */
+      }
+    }
+    void loadUserAddresses();
+  }, []);
+
+  function applyAddress(a: Address) {
+    setSelectedAddressId(a.id);
+    setFullName(a.full_name);
+    setPhone(a.phone);
+    setDepartment(a.department);
+    setMunicipality(a.municipality);
+    setAddress(a.address);
+    setNotes(a.notes ?? "");
+  }
 
   const shippingQuote = useMemo(
     () => getShippingQuote(department, subtotal, shippingMethod),
@@ -90,13 +143,13 @@ export function CheckoutForm() {
           subtotal,
           items,
           customer: {
-            fullName: String(form.get("fullName") ?? ""),
-            email: String(form.get("email") ?? ""),
-            phone: String(form.get("phone") ?? ""),
-            department: String(form.get("department") ?? ""),
-            municipality: String(form.get("municipality") ?? ""),
-            address: String(form.get("address") ?? ""),
-            notes: String(form.get("notes") ?? ""),
+            fullName,
+            email,
+            phone,
+            department,
+            municipality,
+            address: String(form.get("address") ?? address),
+            notes,
           },
         }),
       });
@@ -195,6 +248,44 @@ export function CheckoutForm() {
           <h2 className="font-[family-name:var(--font-display)] text-2xl">
             {shippingMethod === "pickup" ? "Tus datos" : "Datos de envío"}
           </h2>
+
+          {!loggedIn && (
+            <p className="mt-3 text-sm text-[var(--muted)]">
+              ¿Ya tienes cuenta?{" "}
+              <Link href="/cuenta/login" className="text-[var(--accent)] underline">
+                Entra
+              </Link>{" "}
+              para usar tus direcciones guardadas.{" "}
+              <Link
+                href="/cuenta/registro"
+                className="text-[var(--accent)] underline"
+              >
+                Regístrate
+              </Link>
+            </p>
+          )}
+
+          {addresses.length > 0 && (
+            <label className="mt-4 block text-sm">
+              Dirección guardada
+              <select
+                className={inputClass}
+                value={selectedAddressId}
+                onChange={(e) => {
+                  const found = addresses.find((a) => a.id === e.target.value);
+                  if (found) applyAddress(found);
+                }}
+              >
+                {addresses.map((a) => (
+                  <option key={a.id} value={a.id}>
+                    {a.label}
+                    {a.is_default ? " (principal)" : ""} — {a.municipality}
+                  </option>
+                ))}
+              </select>
+            </label>
+          )}
+
           <div className="mt-5 grid gap-4 sm:grid-cols-2">
             <label className="block text-sm sm:col-span-2">
               Nombre completo
@@ -203,6 +294,8 @@ export function CheckoutForm() {
                 required
                 className={inputClass}
                 autoComplete="name"
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
               />
             </label>
             <label className="block text-sm">
@@ -213,6 +306,8 @@ export function CheckoutForm() {
                 required
                 className={inputClass}
                 autoComplete="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
               />
             </label>
             <label className="block text-sm">
@@ -224,6 +319,8 @@ export function CheckoutForm() {
                 className={inputClass}
                 autoComplete="tel"
                 placeholder="502…"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
               />
             </label>
             <label className="block text-sm">
@@ -247,7 +344,13 @@ export function CheckoutForm() {
             </label>
             <label className="block text-sm">
               Municipio
-              <input name="municipality" required className={inputClass} />
+              <input
+                name="municipality"
+                required
+                className={inputClass}
+                value={municipality}
+                onChange={(e) => setMunicipality(e.target.value)}
+              />
             </label>
             <label className="block text-sm sm:col-span-2">
               {shippingMethod === "pickup"
@@ -258,11 +361,19 @@ export function CheckoutForm() {
                 required={shippingMethod === "delivery"}
                 className={inputClass}
                 placeholder="Calle, zona, referencias"
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
               />
             </label>
             <label className="block text-sm sm:col-span-2">
               Notas (opcional)
-              <textarea name="notes" rows={3} className={inputClass} />
+              <textarea
+                name="notes"
+                rows={3}
+                className={inputClass}
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+              />
             </label>
           </div>
         </section>

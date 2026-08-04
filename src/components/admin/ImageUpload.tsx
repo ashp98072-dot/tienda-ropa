@@ -40,12 +40,15 @@ export function ImageUpload({
         />
       </label>
       <label className="block text-sm">
-        Subir imagen (Supabase Storage)
+        Subir foto del producto
+        <span className="mt-1 block text-xs font-normal text-[var(--muted)]">
+          JPG/PNG hasta 5 MB. Se guarda en Supabase Storage.
+        </span>
         <input
           type="file"
           accept="image/*"
           disabled={uploading}
-          className="mt-1 block w-full text-xs"
+          className="mt-2 block w-full text-xs"
           onChange={(e) => onFile(e.target.files?.[0])}
         />
       </label>

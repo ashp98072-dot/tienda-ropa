@@ -136,10 +136,15 @@ export function ProductForm({ product }: { product?: Product }) {
         />
       </label>
 
-      <ImageUpload
-        value={form.image}
-        onChange={(url) => setForm({ ...form, image: url })}
-      />
+      <div className="rounded border border-black/10 bg-[var(--mist)]/40 p-4">
+        <p className="mb-3 text-xs tracking-[0.14em] text-[var(--muted)] uppercase">
+          Foto del producto (sube desde tu celular o PC)
+        </p>
+        <ImageUpload
+          value={form.image}
+          onChange={(url) => setForm({ ...form, image: url })}
+        />
+      </div>
 
       <div className="grid gap-4 sm:grid-cols-3">
         <label className="block text-sm">
