@@ -13,7 +13,21 @@ import {
 import { formatDateTimeGT, formatPrice } from "@/lib/products";
 import { SHIPPING_LABELS } from "@/lib/shipping";
 
-type Filter = "all" | "open" | "done" | "cancelled";
+type Filter = "all" | "open" | "done" | "cancelled" | "transfer";
+
+function customerWhatsApp(phone: string, message: string) {
+  const digits = phone.replace(/\D/g, "");
+  const withCountry =
+    digits.length === 8 ? `502${digits}` : digits.replace(/^0+/, "");
+  return `https://wa.me/${withCountry}?text=${encodeURIComponent(message)}`;
+}
+
+function needsTransferNotice(o: Order) {
+  return (
+    o.paymentMethod === "transferencia" &&
+    (o.status === "awaiting_transfer" || o.status === "pending_payment")
+  );
+}
 
 const OPEN: OrderStatus[] = [
   "pending_payment",
@@ -57,6 +71,7 @@ export function OrdersTable({ orders: initial }: { orders: Order[] }) {
       open: orders.filter((o) => OPEN.includes(o.status)).length,
       done: orders.filter((o) => DONE.includes(o.status)).length,
       cancelled: orders.filter((o) => CANCELLED.includes(o.status)).length,
+      transfer: orders.filter((o) => needsTransferNotice(o)).length,
     };
   }, [orders]);
 
@@ -66,6 +81,7 @@ export function OrdersTable({ orders: initial }: { orders: Order[] }) {
       if (filter === "open" && !OPEN.includes(o.status)) return false;
       if (filter === "done" && !DONE.includes(o.status)) return false;
       if (filter === "cancelled" && !CANCELLED.includes(o.status)) return false;
+      if (filter === "transfer" && !needsTransferNotice(o)) return false;
       if (!query) return true;
       const hay = [
         o.id,
@@ -93,12 +109,28 @@ export function OrdersTable({ orders: initial }: { orders: Order[] }) {
   const chips: { id: Filter; label: string; count: number }[] = [
     { id: "all", label: "Todos", count: counts.all },
     { id: "open", label: "En curso", count: counts.open },
+    { id: "transfer", label: "Transferencia", count: counts.transfer },
     { id: "done", label: "Entregados", count: counts.done },
     { id: "cancelled", label: "Cancelados", count: counts.cancelled },
   ];
 
   return (
     <div className="space-y-4">
+      {counts.transfer > 0 && (
+        <div className="border border-amber-600/30 bg-amber-50 px-4 py-3 text-sm text-amber-950">
+          <p className="font-medium">
+            {counts.transfer === 1
+              ? "1 pedido por transferencia espera tu acción"
+              : `${counts.transfer} pedidos por transferencia esperan tu acción`}
+          </p>
+          <p className="mt-1 text-amber-950/80">
+            Envía al cliente el número de cuenta bancaria (WhatsApp o correo).
+            Cuando confirmes el depósito, cambia el estado a{" "}
+            <strong>Pagado</strong> y luego a <strong>En preparación</strong>.
+          </p>
+        </div>
+      )}
+
       <div className="flex flex-wrap gap-2">
         {chips.map((c) => (
           <button
@@ -107,8 +139,12 @@ export function OrdersTable({ orders: initial }: { orders: Order[] }) {
             onClick={() => setFilter(c.id)}
             className={`px-3 py-1.5 text-xs tracking-[0.12em] uppercase ${
               filter === c.id
-                ? "bg-[var(--ink)] text-white"
-                : "border border-black/15 bg-white"
+                ? c.id === "transfer"
+                  ? "bg-amber-700 text-white"
+                  : "bg-[var(--ink)] text-white"
+                : c.id === "transfer" && counts.transfer > 0
+                  ? "border border-amber-600/40 bg-amber-50 text-amber-950"
+                  : "border border-black/15 bg-white"
             }`}
           >
             {c.label} ({c.count})
@@ -158,7 +194,12 @@ export function OrdersTable({ orders: initial }: { orders: Order[] }) {
                     </td>
                     <td className="px-3 py-3">{formatPrice(o.total)}</td>
                     <td className="px-3 py-3 text-xs tracking-wide">
-                      {paymentMethodLabel(o.paymentMethod)}
+                      <div>{paymentMethodLabel(o.paymentMethod)}</div>
+                      {needsTransferNotice(o) && (
+                        <div className="mt-1 text-[10px] font-medium tracking-wide text-amber-800 uppercase">
+                          Enviar nº de cuenta
+                        </div>
+                      )}
                     </td>
                     <td className="px-3 py-3">
                       <select
@@ -191,6 +232,30 @@ export function OrdersTable({ orders: initial }: { orders: Order[] }) {
                   {expanded && (
                     <tr className="border-b border-black/10 bg-[var(--mist)]/30">
                       <td colSpan={6} className="px-4 py-4">
+                        {needsTransferNotice(o) && (
+                          <div className="mb-4 border border-amber-600/30 bg-amber-50 px-4 py-3 text-sm text-amber-950">
+                            <p className="font-medium">
+                              Acción requerida: enviar número de cuenta
+                            </p>
+                            <p className="mt-1 text-amber-950/80">
+                              Este pedido es por <strong>transferencia</strong>.
+                              Contacta a {o.customer.fullName} y envíales los
+                              datos bancarios. Total a depositar:{" "}
+                              <strong>{formatPrice(o.total)}</strong>.
+                            </p>
+                            <a
+                              href={customerWhatsApp(
+                                o.customer.phone,
+                                `Hola ${o.customer.fullName}, gracias por tu pedido ${o.id} en I NEED YOU. El total es ${formatPrice(o.total)}. Te comparto el número de cuenta para la transferencia: `,
+                              )}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="mt-3 inline-block bg-amber-800 px-3 py-2 text-xs tracking-[0.14em] text-white uppercase"
+                            >
+                              WhatsApp al cliente
+                            </a>
+                          </div>
+                        )}
                         <div className="grid gap-4 text-sm md:grid-cols-2">
                           <div>
                             <p className="text-[10px] tracking-[0.16em] text-[var(--muted)] uppercase">

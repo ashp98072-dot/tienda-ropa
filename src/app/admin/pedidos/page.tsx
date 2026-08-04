@@ -13,10 +13,11 @@ export default async function AdminOrdersPage() {
         Pedidos
       </h1>
       <p className="mb-6 max-w-2xl text-sm text-[var(--muted)]">
-        Filtra, busca y abre el detalle de cada pedido. Cambia el estado a{" "}
+        Filtra, busca y abre el detalle de cada pedido. Si el pago es{" "}
+        <strong>transferencia</strong>, el panel te avisa para enviar el número
+        de cuenta al cliente. Luego cambia el estado a <strong>Pagado</strong>,{" "}
         <strong>En preparación</strong>, <strong>Enviado</strong> o{" "}
-        <strong>Entregado</strong> según avances. El método de pago (Tarjeta /
-        Transferencia / Contra entrega) es aparte del estado del pedido.
+        <strong>Entregado</strong>.
       </p>
       <OrdersTable orders={orders} />
     </div>
