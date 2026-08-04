@@ -153,7 +153,10 @@ export async function getOrder(id: string) {
     .select("*")
     .eq("id", id)
     .maybeSingle();
-  if (error) throw new Error(`Supabase getOrder: ${error.message}`);
+  if (error) {
+    console.error(`Supabase getOrder: ${error.message}`);
+    return undefined;
+  }
   return data ? fromDb(data as DbOrder) : undefined;
 }
 
@@ -170,7 +173,10 @@ export async function listOrders() {
     .from("orders")
     .select("*")
     .order("created_at", { ascending: false });
-  if (error) throw new Error(`Supabase listOrders: ${error.message}`);
+  if (error) {
+    console.error(`Supabase listOrders: ${error.message}`);
+    return [];
+  }
   return (data as DbOrder[]).map(fromDb);
 }
 

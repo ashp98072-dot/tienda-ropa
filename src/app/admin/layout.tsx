@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { AdminNav } from "@/components/admin/AdminNav";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Admin",
   robots: { index: false, follow: false },

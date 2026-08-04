@@ -10,10 +10,16 @@ import { isSupabaseConfigured } from "@/lib/supabase";
 export default async function AdminHomePage() {
   if (!(await isAdminAuthenticated())) redirect("/admin/login");
 
-  const [products, orders] = await Promise.all([
-    listProducts({ includeInactive: true }),
-    listOrders(),
-  ]);
+  let products: Awaited<ReturnType<typeof listProducts>> = [];
+  let orders: Awaited<ReturnType<typeof listOrders>> = [];
+  try {
+    [products, orders] = await Promise.all([
+      listProducts({ includeInactive: true }),
+      listOrders(),
+    ]);
+  } catch (err) {
+    console.error("Admin dashboard data error:", err);
+  }
 
   const active = products.filter((p) => p.active !== false).length;
   const pending = orders.filter((o) =>
