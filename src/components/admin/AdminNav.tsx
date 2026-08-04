@@ -26,7 +26,7 @@ export function AdminNav() {
       <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-4 py-4">
         <Link href="/admin" className="flex items-center gap-3">
           <Image
-            src="/brand/logo.png"
+            src="/brand/logo-transparent.png"
             alt="I NEED YOU"
             width={40}
             height={48}

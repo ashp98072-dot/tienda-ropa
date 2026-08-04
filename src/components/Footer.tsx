@@ -8,11 +8,11 @@ export function Footer() {
       <div className="mx-auto grid max-w-7xl gap-10 px-4 py-14 sm:px-6 lg:grid-cols-4 lg:px-8">
         <div className="lg:col-span-1">
           <Image
-            src="/brand/logo.png"
+            src="/brand/logo-white.png"
             alt="I NEED YOU — Crea tu estilo"
             width={120}
             height={140}
-            className="h-24 w-auto object-contain brightness-0 invert"
+            className="h-24 w-auto object-contain"
           />
           <p className="mt-4 max-w-xs text-sm leading-relaxed text-white/70">
             Moda para niños, adolescentes y adultos. Envíos a todo Guatemala.

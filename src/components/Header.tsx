@@ -76,10 +76,10 @@ export function Header() {
           aria-label="I NEED YOU — Inicio"
         >
           <BrandLogo
-            height={44}
+            height={48}
             priority
-            invert={!solid}
-            className="max-h-11 sm:max-h-12"
+            variant={solid ? "dark" : "light"}
+            className="max-h-12"
           />
         </Link>
 
