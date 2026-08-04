@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { getOrder, orderStatusLabel } from "@/lib/orders";
+import { orderStatusLabel } from "@/lib/order-labels";
+import { getOrder } from "@/lib/orders";
 import { formatPrice } from "@/lib/products";
 import { SHIPPING_LABELS } from "@/lib/shipping";
 import { whatsappUrl } from "@/lib/site";

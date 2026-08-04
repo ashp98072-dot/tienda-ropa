@@ -1,75 +1,26 @@
 import { mkdir, readFile, writeFile } from "fs/promises";
 import path from "path";
+import {
+  type Order,
+  type OrderCustomer,
+  type OrderStatus,
+} from "./order-labels";
 import type { ShippingMethod } from "./shipping";
 import { getSupabaseAdmin, isSupabaseConfigured } from "./supabase";
 import type { CartItem, PaymentMethod } from "./types";
 
-export type OrderStatus =
-  | "pending_payment"
-  | "awaiting_transfer"
-  | "cod"
-  | "paid"
-  | "processing"
-  | "shipped"
-  | "delivered"
-  | "cancelled"
-  | "failed";
-
-/** Etiquetas en español (Guatemala) — el valor interno se mantiene en inglés. */
-export const ORDER_STATUS_LABELS: Record<OrderStatus, string> = {
-  pending_payment: "Pago pendiente",
-  awaiting_transfer: "Esperando transferencia",
-  cod: "Contra entrega",
-  paid: "Pagado",
-  processing: "En preparación",
-  shipped: "Enviado",
-  delivered: "Entregado",
-  cancelled: "Cancelado",
-  failed: "Fallido",
-};
-
-export const PAYMENT_METHOD_LABELS: Record<PaymentMethod, string> = {
-  tarjeta: "Tarjeta",
-  contra_entrega: "Contra entrega",
-  transferencia: "Transferencia",
-};
-
-export function orderStatusLabel(status: string): string {
-  return ORDER_STATUS_LABELS[status as OrderStatus] ?? status.replace(/_/g, " ");
-}
-
-export function paymentMethodLabel(method: string): string {
-  return (
-    PAYMENT_METHOD_LABELS[method as PaymentMethod] ?? method.replace(/_/g, " ")
-  );
-}
-
-export interface OrderCustomer {
-  fullName: string;
-  email: string;
-  phone: string;
-  department: string;
-  municipality: string;
-  address: string;
-  notes: string;
-}
-
-export interface Order {
-  id: string;
-  customer: OrderCustomer;
-  paymentMethod: PaymentMethod;
-  shippingMethod: ShippingMethod;
-  items: CartItem[];
-  subtotal: number;
-  shipping: number;
-  total: number;
-  status: OrderStatus;
-  createdAt: string;
-  userId?: string;
-  qpayproToken?: string;
-  qpayproTransId?: string;
-  paymentResponseText?: string;
-}
+export type {
+  Order,
+  OrderCustomer,
+  OrderStatus,
+} from "./order-labels";
+export {
+  ORDER_STATUS_LABELS,
+  PAYMENT_METHOD_LABELS,
+  orderStatusLabel,
+  paymentMethodLabel,
+  splitName,
+} from "./order-labels";
 
 type DbOrder = {
   id: string;
@@ -231,13 +182,6 @@ export async function updateOrder(
   const next = { ...current, ...patch };
   await saveOrder(next);
   return next;
-}
-
-export function splitName(fullName: string) {
-  const parts = fullName.trim().split(/\s+/);
-  const firstName = parts[0] || "Cliente";
-  const lastName = parts.slice(1).join(" ") || "INEEDYOU";
-  return { firstName, lastName };
 }
 
 export function initialStatus(method: PaymentMethod): OrderStatus {

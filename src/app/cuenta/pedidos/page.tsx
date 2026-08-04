@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import {
   orderStatusLabel,
   paymentMethodLabel,
-} from "@/lib/orders";
+} from "@/lib/order-labels";
 import { formatDateTimeGT, formatPrice } from "@/lib/products";
 import {
   createServerSupabase,

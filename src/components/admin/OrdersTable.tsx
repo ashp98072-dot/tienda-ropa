@@ -7,7 +7,7 @@ import {
   paymentMethodLabel,
   type Order,
   type OrderStatus,
-} from "@/lib/orders";
+} from "@/lib/order-labels";
 import { formatDateTimeGT, formatPrice } from "@/lib/products";
 
 const STATUSES = Object.keys(ORDER_STATUS_LABELS) as OrderStatus[];

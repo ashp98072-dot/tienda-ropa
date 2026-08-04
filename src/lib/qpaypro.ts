@@ -1,6 +1,6 @@
 import { QPayProClient } from "@qpaypro/sdk";
-import type { Order } from "./orders";
-import { splitName } from "./orders";
+import type { Order } from "./order-labels";
+import { splitName } from "./order-labels";
 
 export type QPayProEnv = "sandbox" | "production";
 

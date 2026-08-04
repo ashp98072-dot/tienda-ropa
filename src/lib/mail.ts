@@ -2,7 +2,7 @@ import {
   orderStatusLabel,
   paymentMethodLabel,
   type Order,
-} from "./orders";
+} from "./order-labels";
 import { formatPrice } from "./products";
 import { SHIPPING_LABELS } from "./shipping";
 import { SITE } from "./site";
