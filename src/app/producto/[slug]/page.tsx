@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { AddToCart } from "@/components/AddToCart";
 import { ProductGallery } from "@/components/ProductGallery";
 import { WishlistButton } from "@/components/WishlistButton";
-import { getProductBySlug, listProducts } from "@/lib/catalog";
+import { getProductBySlug } from "@/lib/catalog";
 import {
   categoryLabel,
   GENDER_LABELS,
@@ -14,14 +14,8 @@ import {
 
 type Params = Promise<{ slug: string }>;
 
-export async function generateStaticParams() {
-  try {
-    const products = await listProducts();
-    return products.map((p) => ({ slug: p.slug }));
-  } catch {
-    return [];
-  }
-}
+/** Siempre fresco: si no, al subir fotos en admin la tienda seguía mostrando la versión vieja. */
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({
   params,

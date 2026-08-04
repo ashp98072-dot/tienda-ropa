@@ -1,3 +1,4 @@
+import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
 import {
@@ -7,6 +8,12 @@ import {
   upsertProduct,
 } from "@/lib/catalog";
 import type { Product } from "@/lib/types";
+
+function refreshStorefront(slug: string) {
+  revalidatePath("/tienda");
+  revalidatePath(`/producto/${slug}`);
+  revalidatePath("/");
+}
 
 type Params = Promise<{ id: string }>;
 
@@ -52,6 +59,7 @@ export async function PUT(
   };
 
   await upsertProduct(product);
+  refreshStorefront(product.slug);
   return NextResponse.json({ product });
 }
 
@@ -81,6 +89,7 @@ export async function PATCH(
   };
 
   await upsertProduct(product);
+  refreshStorefront(product.slug);
   return NextResponse.json({ product });
 }
 
@@ -93,9 +102,11 @@ export async function DELETE(
   }
 
   const { id } = await params;
+  const existing = await getProductById(id);
   const ok = await deleteProduct(id);
   if (!ok) {
     return NextResponse.json({ error: "No encontrado" }, { status: 404 });
   }
+  if (existing) refreshStorefront(existing.slug);
   return NextResponse.json({ ok: true });
 }

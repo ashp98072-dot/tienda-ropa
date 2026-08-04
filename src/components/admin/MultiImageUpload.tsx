@@ -85,7 +85,8 @@ export function MultiImageUpload({
       <label className="block text-sm">
         Subir foto
         <span className="mt-1 block text-xs font-normal text-[var(--muted)]">
-          Desde tu celular o PC · JPG/PNG hasta 5 MB
+          Desde tu celular o PC · JPG/PNG hasta 5 MB. Todas se muestran en la
+          ficha del producto (el cliente puede cambiar entre ellas).
         </span>
         <input
           type="file"

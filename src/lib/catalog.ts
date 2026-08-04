@@ -191,19 +191,29 @@ export async function upsertProduct(product: Product) {
   const row = toDb(product);
   const sb = getSupabaseAdmin();
   let { error } = await sb.from("products").upsert(row, { onConflict: "id" });
+
   // Columnas opcionales que aún no existen en proyectos viejos
-  if (error && /images|in_stock/i.test(error.message)) {
-    const { images: _images, in_stock: _stock, ...base } = row;
+  if (error && /in_stock/i.test(error.message) && !/images/i.test(error.message)) {
+    const { in_stock: _stock, ...withoutStock } = row;
+    ({ error } = await sb
+      .from("products")
+      .upsert(withoutStock, { onConflict: "id" }));
+  }
+
+  if (error && /images/i.test(error.message)) {
+    // Sin columna images solo queda la principal — avisar claro
+    const { images: gallery, in_stock: _stock, ...base } = row;
     ({ error } = await sb.from("products").upsert(base, { onConflict: "id" }));
-    if (!error && row.images) {
-      const withImages = { ...base, images: row.images };
-      const retry = await sb
-        .from("products")
-        .upsert(withImages, { onConflict: "id" });
-      if (!retry.error) error = null;
-      else if (!/images/i.test(retry.error.message)) error = retry.error;
+    if (!error && gallery && gallery.length > 1) {
+      console.error(
+        "Supabase: falta la columna products.images. Corre supabase/schema-product-images.sql para guardar varias fotos.",
+      );
+      throw new Error(
+        "Para guardar varias fotos, corre en Supabase el SQL schema-product-images.sql y vuelve a guardar el producto.",
+      );
     }
   }
+
   if (error) throw new Error(`Supabase upsert: ${error.message}`);
   return product;
 }

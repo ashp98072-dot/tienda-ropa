@@ -1,3 +1,4 @@
+import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
 import {
@@ -61,5 +62,8 @@ export async function POST(request: Request) {
   };
 
   await upsertProduct(product);
+  revalidatePath("/tienda");
+  revalidatePath(`/producto/${product.slug}`);
+  revalidatePath("/");
   return NextResponse.json({ product }, { status: 201 });
 }
