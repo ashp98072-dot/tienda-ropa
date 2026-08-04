@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 
 export function Hero() {
@@ -14,12 +15,16 @@ export function Hero() {
       <div className="absolute inset-0 opacity-40 [background-image:radial-gradient(ellipse_at_20%_20%,rgba(185,28,60,0.35),transparent_50%),radial-gradient(ellipse_at_80%_60%,rgba(0,0,0,0.4),transparent_45%)]" />
 
       <div className="relative mx-auto flex min-h-[100svh] max-w-7xl flex-col justify-end px-4 pb-16 pt-28 sm:px-6 sm:pb-20 lg:px-8 lg:pb-24">
-        <p className="animate-[fade-up_0.9s_ease_both] font-[family-name:var(--font-display)] text-5xl leading-none tracking-[0.08em] text-white uppercase sm:text-7xl md:text-8xl lg:text-9xl">
-          I Need You
-        </p>
-        <p className="mt-4 max-w-md animate-[fade-up_0.9s_0.15s_ease_both] text-base text-white/85 sm:text-lg">
-          Crea tu estilo. Ropa para niños, adolescentes y adultos — hecha para
-          cómo vives.
+        <Image
+          src="/brand/logo.png"
+          alt="I NEED YOU — Crea tu estilo"
+          width={420}
+          height={480}
+          priority
+          className="h-auto w-[min(70vw,280px)] animate-[fade-up_0.9s_ease_both] object-contain brightness-0 invert sm:w-[320px] lg:w-[380px]"
+        />
+        <p className="mt-5 max-w-md animate-[fade-up_0.9s_0.15s_ease_both] text-base text-white/85 sm:text-lg">
+          Ropa para niños, adolescentes y adultos — hecha para cómo vives.
         </p>
         <div className="mt-8 animate-[fade-up_0.9s_0.28s_ease_both]">
           <Link

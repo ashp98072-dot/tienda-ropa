@@ -37,6 +37,18 @@ export const metadata: Metadata = {
     "ropa niños",
     "tienda online Guatemala",
   ],
+  applicationName: "I NEED YOU",
+  authors: [{ name: "I NEED YOU" }],
+  creator: "I NEED YOU",
+  publisher: "I NEED YOU",
+  icons: {
+    icon: [
+      { url: "/brand/favicon-32.png", sizes: "32x32", type: "image/png" },
+      { url: "/brand/icon-512.png", sizes: "512x512", type: "image/png" },
+    ],
+    apple: [{ url: "/brand/apple-touch-icon.png", sizes: "180x180" }],
+    shortcut: ["/brand/favicon-32.png"],
+  },
   openGraph: {
     type: "website",
     locale: "es_GT",
@@ -45,12 +57,21 @@ export const metadata: Metadata = {
     description:
       "Moda para niños, adolescentes y adultos. Envíos a todo Guatemala.",
     url: siteUrl,
+    images: [
+      {
+        url: "/brand/og.png",
+        width: 1200,
+        height: 630,
+        alt: "I NEED YOU — Crea tu estilo",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "I NEED YOU | Crea tu estilo",
     description:
       "Moda para niños, adolescentes y adultos. Envíos a todo Guatemala.",
+    images: ["/brand/og.png"],
   },
   robots: {
     index: true,

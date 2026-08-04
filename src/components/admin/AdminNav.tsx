@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 
@@ -23,14 +24,20 @@ export function AdminNav() {
   return (
     <header className="border-b border-black/10 bg-white">
       <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-4 py-4">
-        <div>
-          <p className="font-[family-name:var(--font-display)] text-xl tracking-wide uppercase">
-            I Need You
-          </p>
-          <p className="text-[10px] tracking-[0.18em] text-[var(--muted)] uppercase">
-            Panel admin
-          </p>
-        </div>
+        <Link href="/admin" className="flex items-center gap-3">
+          <Image
+            src="/brand/logo.png"
+            alt="I NEED YOU"
+            width={40}
+            height={48}
+            className="h-10 w-auto object-contain"
+          />
+          <div>
+            <p className="text-[10px] tracking-[0.18em] text-[var(--muted)] uppercase">
+              Panel admin
+            </p>
+          </div>
+        </Link>
         <nav className="flex flex-wrap items-center gap-4 text-xs tracking-[0.14em] uppercase">
           {links.map((l) => (
             <Link

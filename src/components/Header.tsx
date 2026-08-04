@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
+import { BrandLogo } from "./BrandLogo";
 import { useCart } from "./CartProvider";
 import { SearchBar } from "./SearchBar";
 import { useWishlist } from "./WishlistProvider";
@@ -71,11 +72,15 @@ export function Header() {
 
         <Link
           href="/"
-          className={`font-[family-name:var(--font-display)] text-xl tracking-[0.12em] uppercase sm:text-2xl ${
-            solid ? "text-[var(--ink)]" : "text-white"
-          }`}
+          className="relative z-10 flex shrink-0 items-center"
+          aria-label="I NEED YOU — Inicio"
         >
-          I Need You
+          <BrandLogo
+            height={44}
+            priority
+            invert={!solid}
+            className="max-h-11 sm:max-h-12"
+          />
         </Link>
 
         <nav className="hidden items-center gap-8 lg:flex">

@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { SITE, whatsappUrl } from "@/lib/site";
 
@@ -6,12 +7,13 @@ export function Footer() {
     <footer className="mt-auto border-t border-[var(--ink)]/10 bg-[var(--ink)] text-[var(--paper)]">
       <div className="mx-auto grid max-w-7xl gap-10 px-4 py-14 sm:px-6 lg:grid-cols-4 lg:px-8">
         <div className="lg:col-span-1">
-          <p className="font-[family-name:var(--font-display)] text-2xl tracking-[0.12em] uppercase">
-            I Need You
-          </p>
-          <p className="mt-2 text-sm tracking-[0.2em] text-white/60 uppercase">
-            {SITE.tagline}
-          </p>
+          <Image
+            src="/brand/logo.png"
+            alt="I NEED YOU — Crea tu estilo"
+            width={120}
+            height={140}
+            className="h-24 w-auto object-contain brightness-0 invert"
+          />
           <p className="mt-4 max-w-xs text-sm leading-relaxed text-white/70">
             Moda para niños, adolescentes y adultos. Envíos a todo Guatemala.
           </p>
