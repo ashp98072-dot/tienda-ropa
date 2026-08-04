@@ -9,6 +9,9 @@ function friendlyAuthError(message: string) {
   if (/invalid api key/i.test(message)) {
     return "Error de configuración: falta la key anónima JWT de Supabase (anon / eyJ…) en Vercel. No uses solo sb_publishable_.";
   }
+  if (/already registered|already been registered|user already/i.test(message)) {
+    return "Ese correo ya tiene cuenta. Inicia sesión o usa otro correo.";
+  }
   return message;
 }
 
@@ -22,6 +25,11 @@ export function RegisterForm() {
   const [error, setError] = useState<string | null>(null);
   const [info, setInfo] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+
+  async function goToAccount() {
+    router.push("/cuenta");
+    router.refresh();
+  }
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
@@ -42,18 +50,32 @@ export function RegisterForm() {
         },
       },
     });
-    setLoading(false);
     if (err) {
+      setLoading(false);
       setError(friendlyAuthError(err.message));
       return;
     }
+
+    // Si Supabase ya dio sesión, entrar de una
     if (data.session) {
-      router.push("/cuenta");
-      router.refresh();
+      setLoading(false);
+      await goToAccount();
       return;
     }
+
+    // Intentar login inmediato (cuando no piden confirmar correo)
+    const { data: login, error: loginErr } =
+      await supabase.auth.signInWithPassword({ email, password });
+    setLoading(false);
+
+    if (login.session && !loginErr) {
+      await goToAccount();
+      return;
+    }
+
+    // Cuenta creada pero aún no puede entrar (confirma correo activado en Supabase)
     setInfo(
-      "Cuenta creada. Si tu proyecto pide confirmar correo, revisa tu bandeja. Si no, inicia sesión.",
+      "Tu cuenta quedó registrada. Para entrar de inmediato, el administrador debe desactivar «Confirm email» en Supabase. Mientras tanto, revisa tu correo o prueba Iniciar sesión.",
     );
   }
 
@@ -71,7 +93,7 @@ export function RegisterForm() {
         <p className="border border-black/10 bg-[var(--mist)] px-3 py-2 text-sm">
           {info}{" "}
           <Link href="/cuenta/login" className="underline">
-            Ir a login
+            Iniciar sesión
           </Link>
         </p>
       )}
