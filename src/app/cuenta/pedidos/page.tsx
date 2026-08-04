@@ -1,9 +1,15 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import {
+  orderStatusLabel,
+  paymentMethodLabel,
+} from "@/lib/orders";
 import { formatPrice } from "@/lib/products";
-import { createServerSupabase } from "@/lib/supabase-server";
-import { getSessionUser } from "@/lib/supabase-server";
+import {
+  createServerSupabase,
+  getSessionUser,
+} from "@/lib/supabase-server";
 
 export const metadata: Metadata = { title: "Mis pedidos" };
 export const dynamic = "force-dynamic";
@@ -60,13 +66,13 @@ export default async function MisPedidosPage() {
                 <p className="font-medium">{o.id}</p>
                 <p className="text-xs text-[var(--muted)]">
                   {new Date(o.created_at).toLocaleString("es-GT")} ·{" "}
-                  {o.payment_method.replace("_", " ")}
+                  {paymentMethodLabel(o.payment_method)}
                 </p>
               </div>
               <div className="text-right">
                 <p>{formatPrice(Number(o.total))}</p>
-                <p className="text-xs uppercase tracking-wide text-[var(--muted)]">
-                  {o.status.replace(/_/g, " ")}
+                <p className="text-xs tracking-wide text-[var(--muted)]">
+                  {orderStatusLabel(o.status)}
                 </p>
               </div>
             </li>

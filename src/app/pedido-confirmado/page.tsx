@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { getOrder } from "@/lib/orders";
+import { getOrder, orderStatusLabel } from "@/lib/orders";
 import { formatPrice } from "@/lib/products";
 import { SHIPPING_LABELS } from "@/lib/shipping";
 import { whatsappUrl } from "@/lib/site";
@@ -53,7 +53,7 @@ export default async function PedidoConfirmadoPage({
       {order && (
         <div className="mt-6 w-full max-w-sm space-y-2 border border-[var(--ink)]/10 bg-[var(--mist)]/40 px-5 py-4 text-left text-sm">
           <p className="text-xs tracking-wide text-[var(--muted)] uppercase">
-            Estado: {order.status.replace(/_/g, " ")}
+            Estado: {orderStatusLabel(order.status)}
           </p>
           <p>
             {SHIPPING_LABELS[order.shippingMethod ?? "delivery"]}:{" "}

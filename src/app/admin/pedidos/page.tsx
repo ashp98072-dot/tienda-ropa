@@ -13,8 +13,8 @@ export default async function AdminOrdersPage() {
         Pedidos
       </h1>
       <p className="mb-6 text-sm text-[var(--muted)]">
-        Cambia el estado a <strong>processing</strong>, <strong>shipped</strong> o{" "}
-        <strong>delivered</strong> según avances.
+        Cambia el estado a <strong>En preparación</strong>,{" "}
+        <strong>Enviado</strong> o <strong>Entregado</strong> según avances.
       </p>
       <OrdersTable orders={orders} />
     </div>

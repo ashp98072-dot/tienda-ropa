@@ -15,6 +15,35 @@ export type OrderStatus =
   | "cancelled"
   | "failed";
 
+/** Etiquetas en español (Guatemala) — el valor interno se mantiene en inglés. */
+export const ORDER_STATUS_LABELS: Record<OrderStatus, string> = {
+  pending_payment: "Pago pendiente",
+  awaiting_transfer: "Esperando transferencia",
+  cod: "Contra entrega",
+  paid: "Pagado",
+  processing: "En preparación",
+  shipped: "Enviado",
+  delivered: "Entregado",
+  cancelled: "Cancelado",
+  failed: "Fallido",
+};
+
+export const PAYMENT_METHOD_LABELS: Record<PaymentMethod, string> = {
+  tarjeta: "Tarjeta",
+  contra_entrega: "Contra entrega",
+  transferencia: "Transferencia",
+};
+
+export function orderStatusLabel(status: string): string {
+  return ORDER_STATUS_LABELS[status as OrderStatus] ?? status.replace(/_/g, " ");
+}
+
+export function paymentMethodLabel(method: string): string {
+  return (
+    PAYMENT_METHOD_LABELS[method as PaymentMethod] ?? method.replace(/_/g, " ")
+  );
+}
+
 export interface OrderCustomer {
   fullName: string;
   email: string;

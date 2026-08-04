@@ -1,4 +1,8 @@
-import type { Order } from "./orders";
+import {
+  orderStatusLabel,
+  paymentMethodLabel,
+  type Order,
+} from "./orders";
 import { formatPrice } from "./products";
 import { SHIPPING_LABELS } from "./shipping";
 import { SITE } from "./site";
@@ -153,7 +157,7 @@ export async function notifyOrderCreated(order: Order) {
       html: orderEmailHtml(
         order,
         "Nueva orden en la tienda",
-        `Método: ${order.paymentMethod}. Estado: ${order.status}.`,
+        `Método: ${paymentMethodLabel(order.paymentMethod)}. Estado: ${orderStatusLabel(order.status)}.`,
       ),
     });
   }

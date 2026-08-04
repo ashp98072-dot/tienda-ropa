@@ -2,20 +2,15 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import type { Order, OrderStatus } from "@/lib/orders";
+import {
+  ORDER_STATUS_LABELS,
+  paymentMethodLabel,
+  type Order,
+  type OrderStatus,
+} from "@/lib/orders";
 import { formatPrice } from "@/lib/products";
 
-const STATUSES: OrderStatus[] = [
-  "pending_payment",
-  "awaiting_transfer",
-  "cod",
-  "paid",
-  "processing",
-  "shipped",
-  "delivered",
-  "cancelled",
-  "failed",
-];
+const STATUSES = Object.keys(ORDER_STATUS_LABELS) as OrderStatus[];
 
 export function OrdersTable({ orders: initial }: { orders: Order[] }) {
   const router = useRouter();
@@ -75,8 +70,8 @@ export function OrdersTable({ orders: initial }: { orders: Order[] }) {
                 </div>
               </td>
               <td className="px-3 py-3">{formatPrice(o.total)}</td>
-              <td className="px-3 py-3 text-xs uppercase tracking-wide">
-                {o.paymentMethod.replace("_", " ")}
+              <td className="px-3 py-3 text-xs tracking-wide">
+                {paymentMethodLabel(o.paymentMethod)}
               </td>
               <td className="px-3 py-3">
                 <select
@@ -89,7 +84,7 @@ export function OrdersTable({ orders: initial }: { orders: Order[] }) {
                 >
                   {STATUSES.map((s) => (
                     <option key={s} value={s}>
-                      {s.replace(/_/g, " ")}
+                      {ORDER_STATUS_LABELS[s]}
                     </option>
                   ))}
                 </select>
