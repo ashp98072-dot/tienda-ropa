@@ -2,21 +2,21 @@ import { redirect } from "next/navigation";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
 
 const checks = [
-  "Home carga marca I NEED YOU + CTA a tienda (móvil y desktop)",
+  "Inicio muestra la marca I NEED YOU y el botón a la tienda (móvil y desktop)",
   "Filtros: segmento, género, categoría, talla y búsqueda",
   "Ficha: elegir talla/color y añadir a bolsa",
-  "Wishlist (corazón) y página /deseos",
+  "Lista de deseos (corazón) y página /deseos",
   "Carrito: cambiar cantidad y quitar ítems",
-  "Checkout: envío domicilio con tarifa por departamento",
+  "Checkout: envío a domicilio con tarifa por departamento",
   "Checkout: retiro en tienda = envío Q0",
   "Pago contra entrega crea pedido y aparece en admin",
-  "Pago transferencia crea pedido awaiting_transfer",
-  "Pago tarjeta (sandbox QPayPro o /pago/demo) marca paid",
-  "Correo de pedido se loguea en consola o llega por SMTP/Resend",
+  "Pago transferencia crea pedido en estado «Esperando transferencia»",
+  "Pago tarjeta (sandbox QPayPro o /pago/demo) marca «Pagado»",
+  "Correo de pedido se registra en consola o llega por SMTP/Resend",
   "Páginas /envios, /devoluciones, /privacidad, /contacto",
   "WhatsApp flotante abre el número correcto",
-  "Admin: crear, editar y ocultar producto",
-  "Admin: cambiar pedido a shipped / delivered",
+  "Admin: crear, editar y ocultar producto (varias fotos)",
+  "Admin: cambiar pedido a Enviado o Entregado",
   "sitemap.xml y robots.txt responden",
 ];
 
@@ -26,11 +26,22 @@ export default async function AdminQaPage() {
   return (
     <div>
       <h1 className="mb-2 font-[family-name:var(--font-display)] text-4xl">
-        Checklist QA
+        Lista de prueba
       </h1>
-      <p className="mb-6 text-sm text-[var(--muted)]">
-        Marca mentalmente antes del go-live. Imprime o copia a Notion si quieres.
-      </p>
+      <div className="mb-8 max-w-2xl space-y-3 text-sm text-[var(--muted)]">
+        <p>
+          <strong className="text-[var(--ink)]">¿Qué es esto?</strong> Es una
+          lista interna para quien administra la página (Shannon / el encargado).
+          Sirve para revisar, antes de abrir la tienda al público, que todo
+          funciona: catálogo, carrito, pagos, envíos y WhatsApp.
+        </p>
+        <p>
+          <strong className="text-[var(--ink)]">Los clientes no la ven.</strong>{" "}
+          Solo existe dentro de <code className="text-[var(--ink)]">/admin</code>{" "}
+          con contraseña. No aparece en el menú de la tienda.
+        </p>
+        <p>Marca cada punto cuando lo hayas probado (mentalmente o en papel).</p>
+      </div>
       <ul className="space-y-3">
         {checks.map((item) => (
           <li

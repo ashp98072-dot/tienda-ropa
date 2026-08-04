@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AddToCart } from "@/components/AddToCart";
+import { ProductGallery } from "@/components/ProductGallery";
 import { WishlistButton } from "@/components/WishlistButton";
 import { getProductBySlug, listProducts } from "@/lib/catalog";
 import {
@@ -53,21 +53,17 @@ export default async function ProductPage({ params }: { params: Params }) {
       </nav>
 
       <div className="grid gap-10 lg:grid-cols-2 lg:gap-16">
-        <div className="relative aspect-[3/4] overflow-hidden bg-[var(--mist)]">
-          <Image
-            src={product.image}
-            alt={product.name}
-            fill
-            priority
-            className="object-cover"
-            sizes="(max-width: 1024px) 100vw, 50vw"
-          />
-          {product.isNew && (
-            <span className="absolute top-4 left-4 bg-[var(--ink)] px-2 py-1 text-[10px] tracking-[0.16em] text-white uppercase">
-              Nuevo
-            </span>
-          )}
-        </div>
+        <ProductGallery
+          name={product.name}
+          images={
+            product.images?.length
+              ? product.images
+              : product.image
+                ? [product.image]
+                : []
+          }
+          isNew={product.isNew}
+        />
 
         <div className="lg:py-6">
           <p className="text-[10px] tracking-[0.2em] text-[var(--muted)] uppercase">

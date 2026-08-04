@@ -25,6 +25,20 @@ export async function PUT(
   }
 
   const body = (await request.json()) as Partial<Product>;
+  const images = (
+    body.images?.length
+      ? body.images
+      : body.image
+        ? [body.image]
+        : existing.images?.length
+          ? existing.images
+          : existing.image
+            ? [existing.image]
+            : []
+  )
+    .map((u) => u.trim())
+    .filter(Boolean);
+
   const product: Product = {
     ...existing,
     ...body,
@@ -33,7 +47,8 @@ export async function PUT(
     name: (body.name ?? existing.name).trim(),
     price: typeof body.price === "number" ? body.price : existing.price,
     description: (body.description ?? existing.description).trim(),
-    image: (body.image ?? existing.image).trim(),
+    images,
+    image: images[0] ?? (body.image ?? existing.image).trim(),
   };
 
   await upsertProduct(product);

@@ -29,6 +29,18 @@ export async function POST(request: Request) {
     );
   }
 
+  const images = (
+    body.images?.length
+      ? body.images
+      : body.image
+        ? [body.image]
+        : [
+            "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=800&q=80",
+          ]
+  )
+    .map((u) => u.trim())
+    .filter(Boolean);
+
   const product: Product = {
     id: newProductId(),
     slug: body.slug?.trim() || slugify(body.name),
@@ -40,9 +52,8 @@ export async function POST(request: Request) {
     gender: (body.gender as Gender) || "mujer",
     sizes: body.sizes?.length ? body.sizes : ["S", "M", "L"],
     colors: body.colors?.length ? body.colors : ["Negro"],
-    image:
-      body.image?.trim() ||
-      "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=800&q=80",
+    images,
+    image: images[0] ?? "",
     isNew: Boolean(body.isNew),
     featured: Boolean(body.featured),
     active: body.active !== false,

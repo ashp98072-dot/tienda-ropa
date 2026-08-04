@@ -22,7 +22,10 @@ export interface Product {
   gender: Gender;
   sizes: string[];
   colors: string[];
+  /** Imagen principal (primera de images) */
   image: string;
+  /** Galería completa; si falta, se usa [image] */
+  images?: string[];
   isNew?: boolean;
   featured?: boolean;
   /** false = oculto en la tienda (sigue visible en admin) */

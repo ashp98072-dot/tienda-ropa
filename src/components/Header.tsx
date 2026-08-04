@@ -8,6 +8,7 @@ import { SearchBar } from "./SearchBar";
 import { useWishlist } from "./WishlistProvider";
 
 const nav = [
+  { href: "/", label: "Inicio" },
   { href: "/tienda", label: "Tienda" },
   { href: "/tienda?segmento=ninos", label: "Niños" },
   { href: "/tienda?segmento=adolescentes", label: "Adolescentes" },

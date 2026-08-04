@@ -19,12 +19,24 @@ type DbProduct = {
   sizes: string[];
   colors: string[];
   image: string;
+  images?: string[] | null;
   is_new: boolean;
   featured: boolean;
   active: boolean;
 };
 
+function normalizeImages(product: Pick<Product, "image" | "images">) {
+  const fromList = (product.images ?? []).map((u) => u.trim()).filter(Boolean);
+  if (fromList.length) return fromList;
+  const single = product.image?.trim();
+  return single ? [single] : [];
+}
+
 function fromDb(row: DbProduct): Product {
+  const images = normalizeImages({
+    image: row.image ?? "",
+    images: row.images ?? undefined,
+  });
   return {
     id: row.id,
     slug: row.slug,
@@ -36,7 +48,8 @@ function fromDb(row: DbProduct): Product {
     gender: row.gender,
     sizes: row.sizes ?? [],
     colors: row.colors ?? [],
-    image: row.image ?? "",
+    image: images[0] ?? row.image ?? "",
+    images,
     isNew: row.is_new,
     featured: row.featured,
     active: row.active,
@@ -44,6 +57,7 @@ function fromDb(row: DbProduct): Product {
 }
 
 function toDb(product: Product): DbProduct {
+  const images = normalizeImages(product);
   return {
     id: product.id,
     slug: product.slug,
@@ -55,7 +69,8 @@ function toDb(product: Product): DbProduct {
     gender: product.gender,
     sizes: product.sizes,
     colors: product.colors,
-    image: product.image,
+    image: images[0] ?? product.image ?? "",
+    images,
     is_new: Boolean(product.isNew),
     featured: Boolean(product.featured),
     active: product.active !== false,
@@ -86,6 +101,10 @@ async function listProductsFile(includeInactive?: boolean) {
   } catch {
     products = [...SEED_PRODUCTS];
   }
+  products = products.map((p) => {
+    const images = normalizeImages(p);
+    return { ...p, images, image: images[0] ?? p.image ?? "" };
+  });
   if (includeInactive) return products;
   return products.filter((p) => p.active !== false);
 }
@@ -161,9 +180,16 @@ export async function upsertProduct(product: Product) {
     return product;
   }
 
-  const { error } = await getSupabaseAdmin()
-    .from("products")
-    .upsert(toDb(product), { onConflict: "id" });
+  const row = toDb(product);
+  const sb = getSupabaseAdmin();
+  let { error } = await sb.from("products").upsert(row, { onConflict: "id" });
+  // Si aún no corrieron el SQL de images, guardar solo la principal
+  if (error && /images/i.test(error.message)) {
+    const { images: _images, ...withoutImages } = row;
+    ({ error } = await sb
+      .from("products")
+      .upsert(withoutImages, { onConflict: "id" }));
+  }
   if (error) throw new Error(`Supabase upsert: ${error.message}`);
   return product;
 }

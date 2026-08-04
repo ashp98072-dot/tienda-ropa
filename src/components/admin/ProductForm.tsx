@@ -8,19 +8,29 @@ import {
   SEGMENT_LABELS,
 } from "@/lib/products";
 import type { Category, Gender, Product, Segment } from "@/lib/types";
-import { ImageUpload } from "./ImageUpload";
+import { MultiImageUpload } from "./MultiImageUpload";
 
-const empty: Omit<Product, "id"> = {
+function parseList(value: string) {
+  return value
+    .split(/[,;]/)
+    .map((s) => s.trim())
+    .filter(Boolean);
+}
+
+function productImages(product?: Product) {
+  if (!product) return [];
+  if (product.images?.length) return product.images.filter(Boolean);
+  return product.image ? [product.image] : [];
+}
+
+const empty = {
   slug: "",
   name: "",
   price: 0,
   description: "",
-  category: "tops",
-  segment: "adultos",
-  gender: "mujer",
-  sizes: ["S", "M", "L"],
-  colors: ["Negro"],
-  image: "",
+  category: "tops" as Category,
+  segment: "adultos" as Segment,
+  gender: "mujer" as Gender,
   isNew: true,
   featured: false,
   active: true,
@@ -28,9 +38,30 @@ const empty: Omit<Product, "id"> = {
 
 export function ProductForm({ product }: { product?: Product }) {
   const router = useRouter();
-  const [form, setForm] = useState<Omit<Product, "id"> | Product>(
-    product ?? empty,
+  const [form, setForm] = useState({
+    ...empty,
+    ...(product
+      ? {
+          slug: product.slug,
+          name: product.name,
+          price: product.price,
+          description: product.description,
+          category: product.category,
+          segment: product.segment,
+          gender: product.gender,
+          isNew: Boolean(product.isNew),
+          featured: Boolean(product.featured),
+          active: product.active !== false,
+        }
+      : null),
+  });
+  const [sizesText, setSizesText] = useState(
+    product?.sizes?.join(", ") ?? "S, M, L",
   );
+  const [colorsText, setColorsText] = useState(
+    product?.colors?.join(", ") ?? "Negro",
+  );
+  const [images, setImages] = useState<string[]>(productImages(product));
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -39,23 +70,17 @@ export function ProductForm({ product }: { product?: Product }) {
     setSaving(true);
     setError(null);
 
+    const sizes = parseList(sizesText);
+    const colors = parseList(colorsText);
+    const gallery = images.filter(Boolean);
+
     const payload = {
       ...form,
       price: Number(form.price),
-      sizes:
-        typeof form.sizes === "string"
-          ? String(form.sizes)
-              .split(",")
-              .map((s) => s.trim())
-              .filter(Boolean)
-          : form.sizes,
-      colors:
-        typeof form.colors === "string"
-          ? String(form.colors)
-              .split(",")
-              .map((s) => s.trim())
-              .filter(Boolean)
-          : form.colors,
+      sizes: sizes.length ? sizes : ["S", "M", "L"],
+      colors: colors.length ? colors : ["Negro"],
+      images: gallery,
+      image: gallery[0] ?? "",
     };
 
     const res = await fetch(
@@ -116,13 +141,17 @@ export function ProductForm({ product }: { product?: Product }) {
           />
         </label>
         <label className="block text-sm">
-          Slug (URL)
+          Link del producto (slug)
           <input
             className={input}
-            placeholder="auto si lo dejas vacío"
+            placeholder="se crea solo si lo dejas vacío"
             value={form.slug}
             onChange={(e) => setForm({ ...form, slug: e.target.value })}
           />
+          <span className="mt-1 block text-xs text-[var(--muted)]">
+            Es la parte de la URL, ej. /producto/blusa-basica. El cliente no ve
+            este campo; solo admin.
+          </span>
         </label>
       </div>
 
@@ -137,13 +166,13 @@ export function ProductForm({ product }: { product?: Product }) {
       </label>
 
       <div className="rounded border border-black/10 bg-[var(--mist)]/40 p-4">
-        <p className="mb-3 text-xs tracking-[0.14em] text-[var(--muted)] uppercase">
-          Foto del producto (sube desde tu celular o PC)
+        <p className="mb-1 text-xs tracking-[0.14em] text-[var(--muted)] uppercase">
+          Fotos del producto (solo admin)
         </p>
-        <ImageUpload
-          value={form.image}
-          onChange={(url) => setForm({ ...form, image: url })}
-        />
+        <p className="mb-3 text-xs text-[var(--muted)]">
+          Puedes subir varias. La primera es la principal en el catálogo.
+        </p>
+        <MultiImageUpload value={images} onChange={setImages} />
       </div>
 
       <div className="grid gap-4 sm:grid-cols-3">
@@ -198,31 +227,29 @@ export function ProductForm({ product }: { product?: Product }) {
       </div>
 
       <label className="block text-sm">
-        Tallas (separadas por coma)
+        Tallas
         <input
           className={input}
-          value={form.sizes.join(", ")}
-          onChange={(e) =>
-            setForm({
-              ...form,
-              sizes: e.target.value.split(",").map((s) => s.trim()).filter(Boolean),
-            })
-          }
+          value={sizesText}
+          onChange={(e) => setSizesText(e.target.value)}
+          placeholder="S, M, L, XL"
         />
+        <span className="mt-1 block text-xs text-[var(--muted)]">
+          Sepáralas con coma. Ejemplo: S, M, L
+        </span>
       </label>
 
       <label className="block text-sm">
-        Colores (separados por coma)
+        Colores
         <input
           className={input}
-          value={form.colors.join(", ")}
-          onChange={(e) =>
-            setForm({
-              ...form,
-              colors: e.target.value.split(",").map((s) => s.trim()).filter(Boolean),
-            })
-          }
+          value={colorsText}
+          onChange={(e) => setColorsText(e.target.value)}
+          placeholder="Negro, Blanco, Rojo"
         />
+        <span className="mt-1 block text-xs text-[var(--muted)]">
+          Escribe todos juntos separados por coma. Ejemplo: Negro, Blanco
+        </span>
       </label>
 
       <div className="flex flex-wrap gap-4 text-sm">

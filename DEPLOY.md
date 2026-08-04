@@ -11,6 +11,7 @@ Un cliente → un catálogo → un panel admin → **un solo proyecto Supabase**
 2. SQL Editor → New query → pega y corre **en este orden**:
    1. `supabase/schema.sql` (productos, pedidos, fotos)
    2. `supabase/schema-auth.sql` (cuentas de clientes + direcciones)
+   3. Si el proyecto ya existía sin galería: `supabase/schema-product-images.sql`
 3. Auth → Providers → Email: para pruebas, desactiva **Confirm email** (así el registro entra al momento).
 4. Settings → API Keys → copia:
    - Project URL → `NEXT_PUBLIC_SUPABASE_URL`

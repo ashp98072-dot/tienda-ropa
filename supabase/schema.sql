@@ -14,6 +14,7 @@ create table if not exists products (
   sizes text[] not null default '{}',
   colors text[] not null default '{}',
   image text not null default '',
+  images text[] not null default '{}',
   is_new boolean not null default false,
   featured boolean not null default false,
   active boolean not null default true,
