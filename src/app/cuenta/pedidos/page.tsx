@@ -5,7 +5,7 @@ import {
   orderStatusLabel,
   paymentMethodLabel,
 } from "@/lib/orders";
-import { formatPrice } from "@/lib/products";
+import { formatDateTimeGT, formatPrice } from "@/lib/products";
 import {
   createServerSupabase,
   getSessionUser,
@@ -65,7 +65,7 @@ export default async function MisPedidosPage() {
               <div>
                 <p className="font-medium">{o.id}</p>
                 <p className="text-xs text-[var(--muted)]">
-                  {new Date(o.created_at).toLocaleString("es-GT")} ·{" "}
+                  {formatDateTimeGT(o.created_at)} ·{" "}
                   {paymentMethodLabel(o.payment_method)}
                 </p>
               </div>

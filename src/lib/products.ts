@@ -52,3 +52,18 @@ export const DEPARTMENTS_GT = [
 export function formatPrice(amount: number): string {
   return `Q${amount.toFixed(2)}`;
 }
+
+/** Fecha/hora en zona Guatemala — estable entre servidor y navegador (evita error de hidratación). */
+export function formatDateTimeGT(value: string | Date): string {
+  const d = typeof value === "string" ? new Date(value) : value;
+  if (Number.isNaN(d.getTime())) return "";
+  return new Intl.DateTimeFormat("es-GT", {
+    timeZone: "America/Guatemala",
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  }).format(d);
+}

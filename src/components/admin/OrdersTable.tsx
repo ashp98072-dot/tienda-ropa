@@ -8,7 +8,7 @@ import {
   type Order,
   type OrderStatus,
 } from "@/lib/orders";
-import { formatPrice } from "@/lib/products";
+import { formatDateTimeGT, formatPrice } from "@/lib/products";
 
 const STATUSES = Object.keys(ORDER_STATUS_LABELS) as OrderStatus[];
 
@@ -59,8 +59,8 @@ export function OrdersTable({ orders: initial }: { orders: Order[] }) {
             <tr key={o.id} className="border-b border-black/5">
               <td className="px-3 py-3">
                 <div className="font-medium">{o.id}</div>
-                <div className="text-xs text-[var(--muted)]">
-                  {new Date(o.createdAt).toLocaleString("es-GT")}
+                <div className="text-xs text-[var(--muted)]" suppressHydrationWarning>
+                  {formatDateTimeGT(o.createdAt)}
                 </div>
               </td>
               <td className="px-3 py-3">
