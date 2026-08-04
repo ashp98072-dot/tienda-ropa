@@ -23,6 +23,7 @@ type DbProduct = {
   is_new: boolean;
   featured: boolean;
   active: boolean;
+  in_stock?: boolean | null;
 };
 
 function normalizeImages(product: Pick<Product, "image" | "images">) {
@@ -53,6 +54,7 @@ function fromDb(row: DbProduct): Product {
     isNew: row.is_new,
     featured: row.featured,
     active: row.active,
+    inStock: row.in_stock !== false,
   };
 }
 
@@ -74,6 +76,7 @@ function toDb(product: Product): DbProduct {
     is_new: Boolean(product.isNew),
     featured: Boolean(product.featured),
     active: product.active !== false,
+    in_stock: product.inStock !== false,
   };
 }
 
@@ -103,7 +106,12 @@ async function listProductsFile(includeInactive?: boolean) {
   }
   products = products.map((p) => {
     const images = normalizeImages(p);
-    return { ...p, images, image: images[0] ?? p.image ?? "" };
+    return {
+      ...p,
+      images,
+      image: images[0] ?? p.image ?? "",
+      inStock: p.inStock !== false,
+    };
   });
   if (includeInactive) return products;
   return products.filter((p) => p.active !== false);
@@ -183,12 +191,18 @@ export async function upsertProduct(product: Product) {
   const row = toDb(product);
   const sb = getSupabaseAdmin();
   let { error } = await sb.from("products").upsert(row, { onConflict: "id" });
-  // Si aún no corrieron el SQL de images, guardar solo la principal
-  if (error && /images/i.test(error.message)) {
-    const { images: _images, ...withoutImages } = row;
-    ({ error } = await sb
-      .from("products")
-      .upsert(withoutImages, { onConflict: "id" }));
+  // Columnas opcionales que aún no existen en proyectos viejos
+  if (error && /images|in_stock/i.test(error.message)) {
+    const { images: _images, in_stock: _stock, ...base } = row;
+    ({ error } = await sb.from("products").upsert(base, { onConflict: "id" }));
+    if (!error && row.images) {
+      const withImages = { ...base, images: row.images };
+      const retry = await sb
+        .from("products")
+        .upsert(withImages, { onConflict: "id" });
+      if (!retry.error) error = null;
+      else if (!/images/i.test(retry.error.message)) error = retry.error;
+    }
   }
   if (error) throw new Error(`Supabase upsert: ${error.message}`);
   return product;

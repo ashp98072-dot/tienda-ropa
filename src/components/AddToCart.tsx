@@ -9,9 +9,10 @@ export function AddToCart({ product }: { product: Product }) {
   const [size, setSize] = useState(product.sizes[0] ?? "");
   const [color, setColor] = useState(product.colors[0] ?? "");
   const [added, setAdded] = useState(false);
+  const inStock = product.inStock !== false;
 
   function handleAdd() {
-    if (!size || !color) return;
+    if (!inStock || !size || !color) return;
     addItem(product, size, color, 1);
     setAdded(true);
     window.setTimeout(() => setAdded(false), 1800);
@@ -65,9 +66,14 @@ export function AddToCart({ product }: { product: Product }) {
       <button
         type="button"
         onClick={handleAdd}
-        className="w-full bg-[var(--ink)] px-6 py-4 text-xs font-semibold tracking-[0.22em] text-white uppercase transition hover:bg-[var(--accent)]"
+        disabled={!inStock}
+        className="w-full bg-[var(--ink)] px-6 py-4 text-xs font-semibold tracking-[0.22em] text-white uppercase transition hover:bg-[var(--accent)] disabled:cursor-not-allowed disabled:opacity-40"
       >
-        {added ? "Añadido a la bolsa" : "Añadir a la bolsa"}
+        {!inStock
+          ? "Agotado"
+          : added
+            ? "Añadido a la bolsa"
+            : "Añadir a la bolsa"}
       </button>
     </div>
   );

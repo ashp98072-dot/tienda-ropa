@@ -18,6 +18,7 @@ create table if not exists products (
   is_new boolean not null default false,
   featured boolean not null default false,
   active boolean not null default true,
+  in_stock boolean not null default true,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );

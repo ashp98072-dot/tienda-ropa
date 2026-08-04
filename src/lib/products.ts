@@ -34,6 +34,27 @@ export function slugifyCategory(text: string) {
     .slice(0, 40);
 }
 
+/** Seguro para cliente y servidor */
+export function categoryLabel(
+  slug: string,
+  catalog?: { slug: string; name: string }[],
+): string {
+  const fromCatalog = catalog?.find((c) => c.slug === slug)?.name;
+  if (fromCatalog) return fromCatalog;
+  if (slug in CATEGORY_LABELS) {
+    return CATEGORY_LABELS[slug as keyof typeof CATEGORY_LABELS];
+  }
+  return slug
+    .split("-")
+    .filter(Boolean)
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(" ");
+}
+
+export function isBuiltinCategory(slug: string) {
+  return slug in CATEGORY_LABELS;
+}
+
 export const DEPARTMENTS_GT = [
   "Guatemala",
   "Sacatepéquez",

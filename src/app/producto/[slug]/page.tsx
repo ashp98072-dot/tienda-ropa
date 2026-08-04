@@ -5,8 +5,8 @@ import { AddToCart } from "@/components/AddToCart";
 import { ProductGallery } from "@/components/ProductGallery";
 import { WishlistButton } from "@/components/WishlistButton";
 import { getProductBySlug, listProducts } from "@/lib/catalog";
-import { categoryLabel } from "@/lib/categories";
 import {
+  categoryLabel,
   GENDER_LABELS,
   SEGMENT_LABELS,
   formatPrice,
@@ -62,7 +62,8 @@ export default async function ProductPage({ params }: { params: Params }) {
                 ? [product.image]
                 : []
           }
-          isNew={product.isNew}
+          isNew={product.inStock !== false && product.isNew}
+          soldOut={product.inStock === false}
         />
 
         <div className="lg:py-6">
@@ -74,6 +75,9 @@ export default async function ProductPage({ params }: { params: Params }) {
             {product.name}
           </h1>
           <p className="mt-3 text-xl">{formatPrice(product.price)}</p>
+          {product.inStock === false && (
+            <p className="mt-2 text-sm text-[var(--accent)]">Agotado por ahora</p>
+          )}
           <p className="mt-6 max-w-md text-sm leading-relaxed text-[var(--muted)]">
             {product.description}
           </p>

@@ -57,6 +57,7 @@ export async function POST(request: Request) {
     isNew: Boolean(body.isNew),
     featured: Boolean(body.featured),
     active: body.active !== false,
+    inStock: body.inStock !== false,
   };
 
   await upsertProduct(product);

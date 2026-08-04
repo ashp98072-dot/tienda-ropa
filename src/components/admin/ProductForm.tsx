@@ -31,6 +31,7 @@ const empty = {
   isNew: true,
   featured: false,
   active: true,
+  inStock: true,
 };
 
 export function ProductForm({ product }: { product?: Product }) {
@@ -48,6 +49,7 @@ export function ProductForm({ product }: { product?: Product }) {
           isNew: Boolean(product.isNew),
           featured: Boolean(product.featured),
           active: product.active !== false,
+          inStock: product.inStock !== false,
         }
       : null),
   });
@@ -314,7 +316,19 @@ export function ProductForm({ product }: { product?: Product }) {
           />
           Visible en tienda
         </label>
+        <label className="flex items-center gap-2">
+          <input
+            type="checkbox"
+            checked={form.inStock !== false}
+            onChange={(e) => setForm({ ...form, inStock: e.target.checked })}
+          />
+          En existencia
+        </label>
       </div>
+      <p className="text-xs text-[var(--muted)]">
+        Si quitas «En existencia», el producto se muestra como{" "}
+        <strong>Agotado</strong> y no se puede añadir a la bolsa.
+      </p>
 
       <button
         type="submit"

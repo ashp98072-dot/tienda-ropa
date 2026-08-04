@@ -17,11 +17,15 @@ export function ProductCard({ product }: { product: Product }) {
             className="object-cover transition duration-700 group-hover:scale-105"
           />
         </Link>
-        {product.isNew && (
+        {product.inStock === false ? (
+          <span className="pointer-events-none absolute top-3 left-3 z-[1] bg-[var(--accent)] px-2 py-1 text-[10px] tracking-[0.16em] text-white uppercase">
+            Agotado
+          </span>
+        ) : product.isNew ? (
           <span className="pointer-events-none absolute top-3 left-3 z-[1] bg-[var(--ink)] px-2 py-1 text-[10px] tracking-[0.16em] text-white uppercase">
             Nuevo
           </span>
-        )}
+        ) : null}
         <WishlistButton
           productId={product.id}
           className="absolute top-3 right-3 z-[1]"

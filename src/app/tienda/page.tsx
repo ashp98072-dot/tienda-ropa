@@ -3,9 +3,13 @@ import type { Metadata } from "next";
 import { ProductCard } from "@/components/ProductCard";
 import { ProductFilters } from "@/components/ProductFilters";
 import { SearchBar } from "@/components/SearchBar";
-import { categoryLabel, listCategories } from "@/lib/categories";
+import { listCategories } from "@/lib/categories";
 import { listProducts } from "@/lib/catalog";
-import { GENDER_LABELS, SEGMENT_LABELS } from "@/lib/products";
+import {
+  categoryLabel,
+  GENDER_LABELS,
+  SEGMENT_LABELS,
+} from "@/lib/products";
 import type { Category, Gender, Segment } from "@/lib/types";
 
 export const metadata: Metadata = {

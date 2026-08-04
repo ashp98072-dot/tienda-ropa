@@ -32,6 +32,8 @@ export interface Product {
   featured?: boolean;
   /** false = oculto en la tienda (sigue visible en admin) */
   active?: boolean;
+  /** false = agotado (visible pero no se puede comprar) */
+  inStock?: boolean;
 }
 
 export interface CartItem {

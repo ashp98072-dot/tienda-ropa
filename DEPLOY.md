@@ -13,6 +13,7 @@ Un cliente → un catálogo → un panel admin → **un solo proyecto Supabase**
    2. `supabase/schema-auth.sql` (cuentas de clientes + direcciones)
    3. Si el proyecto ya existía sin galería: `supabase/schema-product-images.sql`
    4. Categorías nuevas del admin: `supabase/schema-categories.sql`
+   5. Existencias / agotado: `supabase/schema-product-stock.sql`
 3. Auth → Providers → Email: para pruebas, desactiva **Confirm email** (así el registro entra al momento).
 4. Settings → API Keys → copia:
    - Project URL → `NEXT_PUBLIC_SUPABASE_URL`

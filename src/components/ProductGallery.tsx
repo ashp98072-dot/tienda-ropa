@@ -7,10 +7,12 @@ export function ProductGallery({
   name,
   images,
   isNew,
+  soldOut,
 }: {
   name: string;
   images: string[];
   isNew?: boolean;
+  soldOut?: boolean;
 }) {
   const list = images.filter(Boolean);
   const [active, setActive] = useState(0);
@@ -33,11 +35,15 @@ export function ProductGallery({
           className="object-cover"
           sizes="(max-width: 1024px) 100vw, 50vw"
         />
-        {isNew && (
+        {soldOut ? (
+          <span className="absolute top-4 left-4 bg-[var(--accent)] px-2 py-1 text-[10px] tracking-[0.16em] text-white uppercase">
+            Agotado
+          </span>
+        ) : isNew ? (
           <span className="absolute top-4 left-4 bg-[var(--ink)] px-2 py-1 text-[10px] tracking-[0.16em] text-white uppercase">
             Nuevo
           </span>
-        )}
+        ) : null}
       </div>
       {list.length > 1 && (
         <div className="flex gap-2 overflow-x-auto">

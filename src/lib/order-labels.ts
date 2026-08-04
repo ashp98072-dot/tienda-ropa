@@ -43,7 +43,7 @@ export interface Order {
 export const ORDER_STATUS_LABELS: Record<OrderStatus, string> = {
   pending_payment: "Pago pendiente",
   awaiting_transfer: "Esperando transferencia",
-  cod: "Contra entrega",
+  cod: "Pendiente (contra entrega)",
   paid: "Pagado",
   processing: "En preparación",
   shipped: "Enviado",
@@ -51,6 +51,19 @@ export const ORDER_STATUS_LABELS: Record<OrderStatus, string> = {
   cancelled: "Cancelado",
   failed: "Fallido",
 };
+
+/** Orden fijo del select (evita confusiones en el panel). */
+export const ORDER_STATUS_OPTIONS: OrderStatus[] = [
+  "pending_payment",
+  "awaiting_transfer",
+  "cod",
+  "paid",
+  "processing",
+  "shipped",
+  "delivered",
+  "cancelled",
+  "failed",
+];
 
 export const PAYMENT_METHOD_LABELS: Record<PaymentMethod, string> = {
   tarjeta: "Tarjeta",

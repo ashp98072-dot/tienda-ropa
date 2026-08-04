@@ -75,6 +75,18 @@ export default async function AdminHomePage() {
           Nuevo producto
         </Link>
         <Link
+          href="/admin/productos"
+          className="border border-black/15 px-5 py-3 text-xs tracking-[0.18em] uppercase"
+        >
+          Ver productos
+        </Link>
+        <Link
+          href="/admin/categorias"
+          className="border border-black/15 px-5 py-3 text-xs tracking-[0.18em] uppercase"
+        >
+          Categorías
+        </Link>
+        <Link
           href="/admin/pedidos"
           className="border border-black/15 px-5 py-3 text-xs tracking-[0.18em] uppercase"
         >
