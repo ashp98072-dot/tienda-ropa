@@ -7,7 +7,7 @@ export default async function AdminNewProductPage() {
 
   return (
     <div>
-      <h1 className="mb-6 font-[family-name:var(--font-display)] text-4xl">
+      <h1 className="mb-6 font-[family-name:var(--font-display)] text-3xl sm:text-4xl">
         Nuevo producto
       </h1>
       <ProductForm />

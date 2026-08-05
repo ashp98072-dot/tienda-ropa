@@ -35,7 +35,7 @@ export function ProductCard({ product }: { product: Product }) {
         <h3>
           <Link
             href={`/producto/${product.slug}`}
-            className="font-[family-name:var(--font-display)] text-lg leading-tight text-[var(--ink)] transition group-hover:text-[var(--accent)]"
+            className="font-[family-name:var(--font-display)] text-base leading-tight text-[var(--ink)] transition group-hover:text-[var(--accent)] sm:text-lg"
           >
             {product.name}
           </Link>

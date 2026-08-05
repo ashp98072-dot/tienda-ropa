@@ -16,7 +16,7 @@ export default async function AdminProductsPage() {
     <div>
       <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="font-[family-name:var(--font-display)] text-4xl">
+          <h1 className="font-[family-name:var(--font-display)] text-3xl sm:text-4xl">
             Productos
           </h1>
           <p className="mt-1 max-w-xl text-sm text-[var(--muted)]">

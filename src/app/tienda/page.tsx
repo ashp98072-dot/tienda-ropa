@@ -74,7 +74,7 @@ export default async function TiendaPage({
           <p className="text-[10px] tracking-[0.22em] text-[var(--muted)] uppercase">
             Catálogo
           </p>
-          <h1 className="mt-1 font-[family-name:var(--font-display)] text-4xl sm:text-5xl">
+          <h1 className="mt-1 break-words font-[family-name:var(--font-display)] text-3xl sm:text-5xl">
             {titleBits.length ? titleBits.join(" · ") : "Toda la tienda"}
           </h1>
           <p className="mt-2 text-sm text-[var(--muted)]">

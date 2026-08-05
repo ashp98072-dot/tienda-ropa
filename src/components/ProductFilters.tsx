@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
+import { useState } from "react";
 import { GENDER_LABELS, SEGMENT_LABELS } from "@/lib/products";
 import type { Gender, Segment } from "@/lib/types";
 import { SearchBar } from "./SearchBar";
@@ -14,6 +15,7 @@ export function ProductFilters({
 }) {
   const router = useRouter();
   const params = useSearchParams();
+  const [open, setOpen] = useState(false);
 
   function setParam(key: string, value: string) {
     const next = new URLSearchParams(params.toString());
@@ -33,8 +35,8 @@ export function ProductFilters({
       params.get("q"),
   );
 
-  return (
-    <aside className="space-y-5 lg:sticky lg:top-28">
+  const filterBody = (
+    <div className="space-y-5">
       <div className="hidden lg:block">
         <label className="mb-2 block text-[10px] tracking-[0.2em] text-[var(--muted)] uppercase">
           Buscar
@@ -123,6 +125,32 @@ export function ProductFilters({
           Limpiar filtros
         </button>
       )}
+    </div>
+  );
+
+  return (
+    <aside className="lg:sticky lg:top-28">
+      {/* Móvil: filtros colapsables */}
+      <div className="lg:hidden">
+        <button
+          type="button"
+          onClick={() => setOpen((v) => !v)}
+          className="flex w-full items-center justify-between border border-[var(--ink)]/15 bg-white px-4 py-3 text-left text-xs tracking-[0.16em] uppercase"
+        >
+          <span>
+            Filtros{hasFilters ? " · activos" : ""}
+          </span>
+          <span aria-hidden>{open ? "−" : "+"}</span>
+        </button>
+        {open && (
+          <div className="mt-3 border border-[var(--ink)]/10 bg-white p-4">
+            {filterBody}
+          </div>
+        )}
+      </div>
+
+      {/* Desktop */}
+      <div className="hidden lg:block">{filterBody}</div>
     </aside>
   );
 }

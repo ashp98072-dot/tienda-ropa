@@ -33,9 +33,9 @@ export function CartView() {
         {items.map((item) => (
           <li
             key={`${item.productId}-${item.size}-${item.color}`}
-            className="flex gap-4 py-6"
+            className="flex gap-3 py-5 sm:gap-4 sm:py-6"
           >
-            <div className="relative h-28 w-24 shrink-0 overflow-hidden bg-[var(--mist)]">
+            <div className="relative h-24 w-20 shrink-0 overflow-hidden bg-[var(--mist)] sm:h-28 sm:w-24">
               <Image
                 src={item.image}
                 alt={item.name}
@@ -44,12 +44,12 @@ export function CartView() {
                 sizes="96px"
               />
             </div>
-            <div className="flex flex-1 flex-col">
-              <div className="flex items-start justify-between gap-4">
-                <div>
+            <div className="flex min-w-0 flex-1 flex-col">
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0">
                   <Link
                     href={`/producto/${item.slug}`}
-                    className="font-[family-name:var(--font-display)] text-lg text-[var(--ink)] hover:text-[var(--accent)]"
+                    className="font-[family-name:var(--font-display)] text-base leading-snug text-[var(--ink)] hover:text-[var(--accent)] sm:text-lg"
                   >
                     {item.name}
                   </Link>
@@ -57,7 +57,7 @@ export function CartView() {
                     {item.size} · {item.color}
                   </p>
                 </div>
-                <p className="text-sm font-medium">
+                <p className="shrink-0 text-sm font-medium">
                   {formatPrice(item.price * item.quantity)}
                 </p>
               </div>

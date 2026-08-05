@@ -33,7 +33,7 @@ export default async function AdminHomePage() {
 
   return (
     <div>
-      <h1 className="font-[family-name:var(--font-display)] text-4xl">
+      <h1 className="font-[family-name:var(--font-display)] text-3xl sm:text-4xl">
         Panel
       </h1>
       <p className="mt-2 text-sm text-[var(--muted)]">

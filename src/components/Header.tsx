@@ -47,10 +47,10 @@ export function Header() {
           : "bg-transparent"
       }`}
     >
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-3 px-4 sm:h-20 sm:px-6 lg:px-8">
+      <div className="mx-auto flex h-14 max-w-7xl items-center justify-between gap-2 px-3 sm:h-20 sm:gap-3 sm:px-6 lg:px-8">
         <button
           type="button"
-          className={`relative z-10 flex h-10 w-10 items-center justify-center lg:hidden ${
+          className={`relative z-10 flex h-10 w-10 shrink-0 items-center justify-center lg:hidden ${
             solid ? "text-[var(--ink)]" : "text-white"
           }`}
           aria-label={open ? "Cerrar menú" : "Abrir menú"}
@@ -72,18 +72,18 @@ export function Header() {
 
         <Link
           href="/"
-          className="relative z-10 flex shrink-0 items-center"
+          className="relative z-10 flex min-w-0 shrink items-center"
           aria-label="I NEED YOU — Inicio"
         >
           <BrandLogo
-            height={48}
+            height={40}
             priority
             variant={solid ? "dark" : "light"}
-            className="max-h-12"
+            className="max-h-10 sm:max-h-12"
           />
         </Link>
 
-        <nav className="hidden items-center gap-8 lg:flex">
+        <nav className="hidden items-center gap-6 xl:gap-8 lg:flex">
           {nav.map((item) => (
             <Link
               key={item.href}
@@ -98,17 +98,20 @@ export function Header() {
         </nav>
 
         <div
-          className={`relative z-10 flex items-center gap-3 sm:gap-4 ${
+          className={`relative z-10 flex shrink-0 items-center gap-2 sm:gap-4 ${
             solid ? "text-[var(--ink)]" : "text-white"
           }`}
         >
           <button
             type="button"
             aria-label="Buscar"
-            className="hidden text-xs font-medium tracking-[0.14em] uppercase sm:inline"
+            className="text-xs font-medium tracking-[0.14em] uppercase"
             onClick={() => setSearchOpen((v) => !v)}
           >
-            Buscar
+            <span className="hidden sm:inline">Buscar</span>
+            <span className="sm:hidden" aria-hidden>
+              ⌕
+            </span>
           </button>
           <Link
             href="/cuenta"
@@ -119,8 +122,12 @@ export function Header() {
           <Link
             href="/deseos"
             className="relative text-xs font-medium tracking-[0.14em] uppercase"
+            aria-label="Lista de deseos"
           >
-            Deseos
+            <span className="hidden sm:inline">Deseos</span>
+            <span className="sm:hidden" aria-hidden>
+              ♥
+            </span>
             {wishCount > 0 && (
               <span
                 className={`ml-1 inline-flex h-5 min-w-5 items-center justify-center rounded-sm px-1 text-[10px] ${
@@ -135,7 +142,7 @@ export function Header() {
           </Link>
           <Link
             href="/carrito"
-            className="relative flex h-10 items-center gap-2 text-xs font-medium tracking-[0.14em] uppercase"
+            className="relative flex h-10 items-center gap-1.5 text-xs font-medium tracking-[0.14em] uppercase sm:gap-2"
           >
             Bolsa
             <span

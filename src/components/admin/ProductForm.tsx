@@ -333,7 +333,7 @@ export function ProductForm({ product }: { product?: Product }) {
       <button
         type="submit"
         disabled={saving}
-        className="bg-[var(--ink)] px-5 py-3 text-xs tracking-[0.18em] text-white uppercase disabled:opacity-50"
+        className="w-full bg-[var(--ink)] px-5 py-3 text-xs tracking-[0.18em] text-white uppercase disabled:opacity-50 sm:w-auto"
       >
         {saving ? "Guardando…" : "Guardar producto"}
       </button>

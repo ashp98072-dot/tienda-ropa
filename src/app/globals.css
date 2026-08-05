@@ -20,6 +20,7 @@
 
 html {
   scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
@@ -29,6 +30,14 @@ body {
     linear-gradient(180deg, #f7f5f2 0%, var(--paper) 40%, #ebe7e1 100%);
   color: var(--ink);
   font-family: var(--font-sans), system-ui, sans-serif;
+  overflow-x: clip;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+img,
+video {
+  max-width: 100%;
+  height: auto;
 }
 
 @keyframes fade-up {
@@ -54,4 +63,15 @@ body {
 ::selection {
   background: var(--accent);
   color: white;
+}
+
+/* Controles táctiles más cómodos en móvil */
+@media (max-width: 640px) {
+  button,
+  a,
+  select,
+  input,
+  textarea {
+    touch-action: manipulation;
+  }
 }

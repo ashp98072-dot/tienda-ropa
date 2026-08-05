@@ -17,7 +17,7 @@ export default async function AdminEditProductPage({
 
   return (
     <div>
-      <h1 className="mb-6 font-[family-name:var(--font-display)] text-4xl">
+      <h1 className="mb-6 font-[family-name:var(--font-display)] text-3xl sm:text-4xl">
         Editar producto
       </h1>
       <ProductForm product={product} />

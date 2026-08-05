@@ -153,14 +153,119 @@ export function OrdersTable({ orders: initial }: { orders: Order[] }) {
       </div>
 
       <input
-        className="w-full max-w-md border border-black/15 bg-white px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
+        className="w-full max-w-md border border-black/15 bg-white px-3 py-2.5 text-sm outline-none focus:border-[var(--accent)]"
         placeholder="Buscar por pedido, cliente, teléfono…"
         value={q}
         onChange={(e) => setQ(e.target.value)}
       />
 
-      <div className="overflow-x-auto border border-black/10 bg-white">
-        <table className="w-full min-w-[860px] text-left text-sm">
+      {/* Móvil: tarjetas */}
+      <div className="space-y-3 md:hidden">
+        {visible.map((o) => {
+          const expanded = openId === o.id;
+          return (
+            <article
+              key={o.id}
+              className="border border-black/10 bg-white p-4 text-sm"
+            >
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <p className="font-medium">{o.id}</p>
+                  <p className="text-xs text-[var(--muted)]" suppressHydrationWarning>
+                    {formatDateTimeGT(o.createdAt)}
+                  </p>
+                </div>
+                <p className="font-medium">{formatPrice(o.total)}</p>
+              </div>
+              <p className="mt-2">{o.customer.fullName}</p>
+              <p className="text-xs text-[var(--muted)]">{o.customer.phone}</p>
+              <p className="mt-2 text-xs tracking-wide">
+                {paymentMethodLabel(o.paymentMethod)}
+                {needsTransferNotice(o) ? (
+                  <span className="mt-1 block font-medium text-amber-800 uppercase">
+                    Enviar nº de cuenta
+                  </span>
+                ) : null}
+              </p>
+              <label className="mt-3 block text-xs text-[var(--muted)]">
+                Estado
+                <select
+                  className="mt-1 w-full border border-black/15 bg-white px-2 py-2 text-sm text-[var(--ink)]"
+                  value={o.status}
+                  disabled={busy === o.id}
+                  onChange={(e) =>
+                    setStatus(o.id, e.target.value as OrderStatus)
+                  }
+                >
+                  {ORDER_STATUS_OPTIONS.map((s) => (
+                    <option key={s} value={s}>
+                      {ORDER_STATUS_LABELS[s]}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <button
+                type="button"
+                className="mt-3 text-xs tracking-wide text-[var(--accent)] uppercase underline-offset-2 hover:underline"
+                onClick={() => setOpenId(expanded ? null : o.id)}
+              >
+                {expanded ? "Cerrar detalle" : "Ver detalle"}
+              </button>
+              {expanded && (
+                <div className="mt-3 space-y-3 border-t border-black/10 pt-3">
+                  {needsTransferNotice(o) && (
+                    <div className="border border-amber-600/30 bg-amber-50 px-3 py-3 text-sm text-amber-950">
+                      <p className="font-medium">Enviar número de cuenta</p>
+                      <a
+                        href={customerWhatsApp(
+                          o.customer.phone,
+                          `Hola ${o.customer.fullName}, gracias por tu pedido ${o.id} en I NEED YOU. El total es ${formatPrice(o.total)}. Te comparto el número de cuenta para la transferencia: `,
+                        )}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="mt-2 inline-block bg-amber-800 px-3 py-2 text-xs tracking-[0.14em] text-white uppercase"
+                      >
+                        WhatsApp al cliente
+                      </a>
+                    </div>
+                  )}
+                  <div>
+                    <p className="text-[10px] tracking-[0.16em] text-[var(--muted)] uppercase">
+                      Envío
+                    </p>
+                    <p className="mt-1">
+                      {SHIPPING_LABELS[o.shippingMethod ?? "delivery"]}
+                    </p>
+                    <p className="mt-2 text-[var(--muted)] break-words">
+                      {o.customer.address}
+                      <br />
+                      {o.customer.municipality}, {o.customer.department}
+                      <br />
+                      {o.customer.email}
+                    </p>
+                  </div>
+                  <ul className="space-y-1">
+                    {o.items.map((item, i) => (
+                      <li key={`${item.productId}-${i}`}>
+                        {item.name} · {item.size}/{item.color} × {item.quantity}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </article>
+          );
+        })}
+        {visible.length === 0 && (
+          <p className="px-1 py-4 text-sm text-[var(--muted)]">
+            Ningún pedido coincide con el filtro.
+          </p>
+        )}
+      </div>
+
+      {/* Desktop: tabla */}
+      <div className="hidden overflow-x-auto border border-black/10 bg-white md:block">
+        <table className="w-full min-w-[760px] text-left text-sm">
           <thead className="border-b border-black/10 bg-[var(--mist)]/50 text-[10px] tracking-[0.16em] uppercase">
             <tr>
               <th className="px-3 py-3 font-medium">Pedido</th>

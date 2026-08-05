@@ -109,8 +109,96 @@ export function ProductsTable({
         ))}
       </div>
 
-      <div className="overflow-x-auto border border-black/10 bg-white">
-        <table className="w-full min-w-[820px] text-left text-sm">
+      {/* Móvil: tarjetas */}
+      <div className="space-y-3 md:hidden">
+        {visible.map((p) => {
+          const inStock = p.inStock !== false;
+          const visibleInStore = p.active !== false;
+          return (
+            <article
+              key={p.id}
+              className="border border-black/10 bg-white p-4 text-sm"
+            >
+              <div className="flex gap-3">
+                <div className="relative h-20 w-16 shrink-0 overflow-hidden bg-[var(--mist)]">
+                  {p.image ? (
+                    <Image
+                      src={p.image}
+                      alt=""
+                      fill
+                      className="object-cover"
+                      sizes="64px"
+                    />
+                  ) : null}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="font-medium leading-snug">{p.name}</p>
+                  <p className="mt-0.5 text-xs text-[var(--muted)]">
+                    {categoryLabel(p.category, categories)}
+                    {p.isNew ? " · Nuevo" : ""}
+                    {p.featured ? " · Destacado" : ""}
+                  </p>
+                  <p className="mt-2 font-medium">{formatPrice(p.price)}</p>
+                </div>
+              </div>
+              <div className="mt-3 flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  disabled={busy === p.id}
+                  onClick={() => patch(p.id, { inStock: !inStock })}
+                  className={`px-2.5 py-1.5 text-xs ${
+                    inStock
+                      ? "bg-emerald-50 text-emerald-800"
+                      : "bg-[var(--accent)]/10 text-[var(--accent)]"
+                  }`}
+                >
+                  {inStock ? "En existencia" : "Agotado"}
+                </button>
+                <button
+                  type="button"
+                  disabled={busy === p.id}
+                  onClick={() => patch(p.id, { active: !visibleInStore })}
+                  className="border border-black/15 px-2.5 py-1.5 text-xs"
+                >
+                  {visibleInStore ? "Visible" : "Oculto"}
+                </button>
+              </div>
+              <div className="mt-3 flex flex-wrap gap-4 text-xs tracking-wide uppercase">
+                <Link
+                  href={`/admin/productos/${p.id}`}
+                  className="text-[var(--accent)]"
+                >
+                  Editar
+                </Link>
+                <Link
+                  href={`/producto/${p.slug}`}
+                  className="text-[var(--muted)]"
+                  target="_blank"
+                >
+                  Ver
+                </Link>
+                <button
+                  type="button"
+                  disabled={busy === p.id}
+                  onClick={() => remove(p.id)}
+                  className="text-[var(--muted)] hover:text-[var(--accent)]"
+                >
+                  Eliminar
+                </button>
+              </div>
+            </article>
+          );
+        })}
+        {visible.length === 0 && (
+          <p className="px-1 py-4 text-sm text-[var(--muted)]">
+            Ningún producto coincide con la búsqueda.
+          </p>
+        )}
+      </div>
+
+      {/* Desktop: tabla */}
+      <div className="hidden overflow-x-auto border border-black/10 bg-white md:block">
+        <table className="w-full min-w-[760px] text-left text-sm">
           <thead className="border-b border-black/10 bg-[var(--mist)]/50 text-[10px] tracking-[0.16em] uppercase">
             <tr>
               <th className="px-3 py-3 font-medium">Producto</th>

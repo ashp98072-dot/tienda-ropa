@@ -65,7 +65,7 @@ export default async function ProductPage({ params }: { params: Params }) {
             {SEGMENT_LABELS[product.segment]} · {GENDER_LABELS[product.gender]} ·{" "}
             {categoryLabel(product.category)}
           </p>
-          <h1 className="mt-2 font-[family-name:var(--font-display)] text-4xl sm:text-5xl">
+          <h1 className="mt-2 break-words font-[family-name:var(--font-display)] text-3xl sm:text-5xl">
             {product.name}
           </h1>
           <p className="mt-3 text-xl">{formatPrice(product.price)}</p>
